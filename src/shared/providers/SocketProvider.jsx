@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from 'react';
-import { io } from 'socket.io-client';
+import * as signalR from '@microsoft/signalr';
 
 export const SocketContext = createContext({
     socket: null,
@@ -11,26 +11,43 @@ export const SocketProvider = ({ children }) => {
     const [isConnected, setIsConnected] = useState(false);
 
     useEffect(() => {
-        // Kết nối tới Backend 
-        const socketInstance = io('http://localhost:3001', {
-            transports: ['websocket'], // Force websocket
-            autoConnect: true,
-        });
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl('http://localhost:8050/hubs/messages', {
+                // Tắt comment dòng dưới nếu gặp lỗi CORS policy (nếu BE không có auth cookie)
+                skipNegotiation: true,
+                transport: signalR.HttpTransportType.WebSockets
+            })
+            .withAutomaticReconnect() // Tự động kết nối lại khi rớt mạng
+            .build();
 
-        socketInstance.on('connect', () => {
-            console.log('Socket connected:', socketInstance.id);
-            setIsConnected(true);
-        });
 
-        socketInstance.on('disconnect', () => {
-            console.log('Socket disconnected');
+        setSocket(connection);
+
+        // Khởi động kết nối
+        connection.start()
+            .then(() => {
+                console.log('SignalR connected:', connection.connectionId);
+                setIsConnected(true);
+            })
+            .catch(err => {
+                console.error('SignalR connection failed: ', err);
+                setIsConnected(false);
+            });
+
+        // Lắng nghe sự kiện ngắt kết nối
+        connection.onclose(() => {
+            console.log('SignalR disconnected');
             setIsConnected(false);
         });
 
-        setSocket(socketInstance);
+        // Lắng nghe sự kiện kết nối lại thành công sau khi rớt mạng
+        connection.onreconnected(connectionId => {
+            console.log('SignalR reconnected:', connectionId);
+            setIsConnected(true);
+        });
 
         return () => {
-            socketInstance.disconnect();
+            connection.stop();
         };
     }, []);
 

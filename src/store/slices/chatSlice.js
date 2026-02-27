@@ -20,8 +20,12 @@ const chatSlice = createSlice({
     name: 'chat',
     initialState,
     reducers: {
-        // Action: Thêm tin nhắn mới
-        addMessage: (state, action) => {
+        // Action: Thêm tin nhắn mới (Optimistic)
+        sendMessage: (state, action) => {
+            state.messages.push(action.payload);
+        },
+        // Action: Nhận từ socket
+        receiveMessage: (state, action) => {
             state.messages.push(action.payload);
         },
         // Action: Chuyển kênh
@@ -32,5 +36,5 @@ const chatSlice = createSlice({
 });
 
 // 3. Export Actions & Reducer
-export const { addMessage, setActiveChannel } = chatSlice.actions;
+export const { sendMessage, receiveMessage, setActiveChannel } = chatSlice.actions;
 export default chatSlice.reducer;
