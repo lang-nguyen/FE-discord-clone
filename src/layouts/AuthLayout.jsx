@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import authBg from '../assets/auth-bg.png';
+import authBg from '../assets/images/auth-bg.png';
 
 export function AuthLayout() {
     return (
