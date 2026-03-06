@@ -1,12 +1,25 @@
+import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSocket } from './shared/hooks/useSocket';
 import { sendMessage } from './store/slices/chatSlice';
 import ServerHeader from './features/servers/components/ServerHeader';
+import UserPanel from './layouts/components/Sidebar/UserPanel';
 
 function App() {
   const { socket, isConnected } = useSocket();
   const dispatch = useDispatch();
   const messages = useSelector(state => state.chat.messages);
+
+  // States test cho UserPanel
+  const [isMuted, setIsMuted] = useState(false);
+  const [isDeafened, setIsDeafened] = useState(false);
+
+  const mockUser = {
+    username: "sw...",
+    statusText: "sw...",
+    avatarUrl: "https://github.com/shadcn.png", // Dùng avatar tạm
+    onlineStatus: "online"
+  };
 
   const handleTestSend = () => {
     const msg = {
@@ -26,16 +39,34 @@ function App() {
       <hr />
 
       <h3>Test UI Component</h3>
-      {/* Khung giả lập cột Sidebar bên trái (Rộng khoảng 240px) */}
-      <div className="w-60 bg-[#2B2D31] border border-black/20 rounded-md overflow-hidden mt-4 mb-8">
+      {/* Khung giả lập cột Sidebar bên trái (Rộng khoảng 240px, cao 500px để test cuộn) */}
+      <div className="flex flex-col w-60 h-[500px] bg-[#2B2D31] border border-black/20 rounded-md overflow-hidden mt-4 mb-8">
+
+        {/* Phần 1: Header */}
         <ServerHeader
           serverName="Công ty tốt nghiệp thiệt không"
           onClickHeader={() => alert("Mở Menu Của Server!")}
           onClickInvite={() => alert("Mời Bạn Bè!")}
         />
-        <div className="p-4 text-sm text-gray-400">
-          Danh sách channel sẽ nằm ở đây...
+
+        {/* Phần 2: Thân (Body) cuộn được */}
+        <div className="flex-1 p-4 text-sm text-gray-400 overflow-y-auto">
+          <p>Danh sách channel sẽ nằm ở đây...</p>
+          {Array.from({ length: 20 }).map((_, i) => (
+            <div key={i} className="my-4 p-2 bg-black/10 rounded">Channel giả {i + 1}</div>
+          ))}
         </div>
+
+        {/* Phần 3: User Panel Dính Đáy (Sticky Bottom) */}
+        <UserPanel
+          user={mockUser}
+          isMuted={isMuted}
+          isDeafened={isDeafened}
+          onToggleMute={() => setIsMuted(!isMuted)}
+          onToggleDeafen={() => setIsDeafened(!isDeafened)}
+          onClickSettings={() => alert("Open Settings!")}
+          onClickProfile={() => alert("Open Profile!")}
+        />
       </div>
 
       <hr />
