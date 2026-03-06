@@ -1,6 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { useSocket } from './shared/hooks/useSocket';
 import { sendMessage } from './store/slices/chatSlice';
+import ServerHeader from './features/servers/components/ServerHeader';
 
 function App() {
   const { socket, isConnected } = useSocket();
@@ -20,8 +21,23 @@ function App() {
   };
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'sans-serif' }}>
+    <div style={{ padding: '20px', fontFamily: 'sans-serif', backgroundColor: '#313338', minHeight: '100vh', color: 'white' }}>
       <h1>Màn Hình Test Hạ Tầng</h1>
+      <hr />
+
+      <h3>Test UI Component</h3>
+      {/* Khung giả lập cột Sidebar bên trái (Rộng khoảng 240px) */}
+      <div className="w-60 bg-[#2B2D31] border border-black/20 rounded-md overflow-hidden mt-4 mb-8">
+        <ServerHeader
+          serverName="Công ty tốt nghiệp thiệt không"
+          onClickHeader={() => alert("Mở Menu Của Server!")}
+          onClickInvite={() => alert("Mời Bạn Bè!")}
+        />
+        <div className="p-4 text-sm text-gray-400">
+          Danh sách channel sẽ nằm ở đây...
+        </div>
+      </div>
+
       <hr />
 
       <h3>1. Test Socket Connection</h3>
