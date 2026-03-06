@@ -1,0 +1,60 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+import { ChevronDown, UserPlus } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shared/components/ui/Tooltip';
+import { Button } from '@/shared/components/ui/Button';
+
+/**
+ * ServerHeader Component
+ * Hiển thị thanh tiêu đề của Server (tên server + nút dropdown + nút mời người)
+ * Vị trí: Đỉnh của cột danh sách Channel.
+ */
+const ServerHeader = ({ serverName, onClickHeader, onClickInvite }) => {
+    return (
+        // THẺ CHỨA NGOÀI CÙNG: làm layout
+        <div className="w-full h-12 flex items-center justify-between px-4 border-b border-[#1F2023]">
+
+            {/* NÚT BẤM BÊN TRÁI (Tên Server + Mũi tên): Nút Mở Menu */}
+            <button
+                className="flex items-center min-w-0 flex-1 h-10 px-2 -ml-2 text-left hover:bg-white/5 transition-colors rounded-md"
+                onClick={onClickHeader}
+            >
+                <h1 className="font-semibold text-[15px] text-white truncate mr-1">
+                    {serverName}
+                </h1>
+                <ChevronDown className="w-4 h-4 text-white/80 flex-shrink-0" />
+            </button>
+
+            {/* NÚT BẤM BÊN PHẢI (Mời bạn bè) */}
+            <TooltipProvider>
+                <Tooltip delayDuration={50}>
+                    <TooltipTrigger asChild>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="w-8 h-8 rounded-md text-white/80 hover:bg-[#35373C] hover:text-white ml-2 [&_svg]:size-5 shrink-0"
+                            onClick={onClickInvite}
+                        >
+                            <UserPlus />
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" sideOffset={8} className="bg-black text-white px-3 py-1.5 rounded-sm">
+                        <p className="font-semibold text-sm">Invite to Server</p>
+                    </TooltipContent>
+                </Tooltip>
+            </TooltipProvider>
+
+        </div>
+    );
+};
+
+ServerHeader.propTypes = {
+    // Bắt buộc phải truyền text Tên Server vào
+    serverName: PropTypes.string.isRequired,
+    // Không bắt buộc: Hàm xử lý khi bấm vào khung tiêu đề
+    onClickHeader: PropTypes.func,
+    // Không bắt buộc: Hàm xử lý khi bấm vào Icon Invite
+    onClickInvite: PropTypes.func,
+};
+
+export default ServerHeader;
