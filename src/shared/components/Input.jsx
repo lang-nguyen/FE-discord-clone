@@ -14,7 +14,7 @@ export const Input = React.forwardRef(({ className, type, label, error, required
             {label && (
                 <label
                     htmlFor={inputId}
-                    className="text-sm font-medium leading-none text-gray-300 peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    className="text-xs font-bold uppercase tracking-wide text-gray-300 peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
                     {label} {required && <span className="text-red-500">*</span>}
                 </label>
@@ -23,8 +23,9 @@ export const Input = React.forwardRef(({ className, type, label, error, required
                 id={inputId}
                 type={type}
                 className={cn(
-                    "flex h-10 w-full rounded-md border border-gray-700 bg-gray-900/50 px-3 py-2 text-sm text-gray-100 placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 disabled:cursor-not-allowed disabled:opacity-50 transition-colors",
-                    error && "border-red-500 focus-visible:ring-red-500",
+                    "flex h-10 w-full rounded-[3px] bg-[#1E1F22] px-3 py-2 text-base text-gray-100 placeholder:text-gray-500 outline-none border-none focus:ring-0 transition-colors",
+                    "focus:bg-[rgba(0,0,0,0.1)] focus:outline-none focus-visible:outline-none",
+                    error && "border border-red-500",
                     className
                 )}
                 ref={ref}
