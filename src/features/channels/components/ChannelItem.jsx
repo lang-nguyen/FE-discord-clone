@@ -63,19 +63,48 @@ const UserLimit = ({ type, userLimit, present = 0 }) => {
 };
 
 // helper: ChannelActions
-const ChannelActions = ({ type }) => {
+const ChannelActions = ({ 
+    type,
+    onOpenChat,
+    onInviteToVoice,
+    onEditChannel
+}) => {
     return (
         <div className="hidden group-hover:flex items-center space-x-1 flex-shrink-0">
             {type === 'voice' && (
                 <ActionTooltip label="Open Chat">
-                    <MessageSquare className="w-4 h-4 text-gray-400 hover:text-gray-200 transition-colors" />
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onOpenChat?.();
+                        }}
+                        className="text-gray-400 hover:text-gray-200 transition-colors"
+                    >
+                        <MessageSquare className="w-4 h-4" />
+                    </button>
                 </ActionTooltip>
             )}
             <ActionTooltip label="Invite to Voice">
-                <UserPlus className="w-4 h-4 text-gray-400 hover:text-gray-200 transition-colors" />
+                <button
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onInviteToVoice?.();
+                    }}
+                    className="text-gray-400 hover:text-gray-200 transition-colors"
+                >
+                    <UserPlus className="w-4 h-4" />
+                </button>
             </ActionTooltip>
             <ActionTooltip label="Edit Channel">
-                <Settings className="w-4 h-4 text-gray-400 hover:text-gray-200 transition-colors" />
+                <button
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onEditChannel?.();
+                    }}
+                    className="text-gray-400 hover:text-gray-200 transition-colors"
+                >
+                    <Settings className="w-4 h-4" />
+                </button>
             </ActionTooltip>
         </div>
     );
@@ -89,11 +118,14 @@ const ChannelItem = ({
     isPrivate = false,
     userLimit = 0,
     present = 0,
-    onClick
+    onChannelClick,
+    onOpenChat,
+    onInviteToVoice,
+    onEditChannel
 }) => {
     return (
         <div
-            onClick={onClick}
+            onClick={onChannelClick}
             className={cn(
                 "group relative flex items-center justify-between px-2 py-1.5 mx-2 rounded-md cursor-pointer transition-colors",
                 !isActive ? "hover:bg-[#35373C]" : "",
@@ -107,7 +139,12 @@ const ChannelItem = ({
 
             <div className="flex items-center ml-2">
                 <UserLimit type={type} userLimit={userLimit} present={present} />
-                <ChannelActions type={type} />
+                <ChannelActions 
+                    type={type}
+                    onOpenChat={onOpenChat}
+                    onInviteToVoice={onInviteToVoice}
+                    onEditChannel={onEditChannel}
+                />
             </div>
         </div>
     );
