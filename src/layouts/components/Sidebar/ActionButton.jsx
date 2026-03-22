@@ -7,7 +7,8 @@ import {
 } from "@/shared/components/ui/Tooltip";
 import { Plus, Compass } from "lucide-react";
 
-const ActionButton = ({ type, name }) => {
+const ActionButton = ({ type, name, onClick }) => {
+
   const isAdd = type === "add";
   const Icon = isAdd ? Plus : Compass;
 
@@ -15,7 +16,11 @@ const ActionButton = ({ type, name }) => {
     <TooltipProvider>
       <Tooltip delayDuration={0}>
         <TooltipTrigger asChild>
-          <button className="group relative flex items-center mb-3 focus:outline-none">
+          <button 
+            onClick={onClick}
+            className="group relative flex items-center mb-3 focus:outline-none"
+          >
+
             {/* Pill Indicator (Optional for action buttons, but Discord sometimes uses a small one) */}
             <div className="absolute left-0 bg-white rounded-r-full transition-all duration-200 w-[4px] h-0 group-hover:h-[20px]" />
 

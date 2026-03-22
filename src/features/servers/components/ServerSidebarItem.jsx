@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 import {
   Tooltip,
@@ -8,14 +9,6 @@ import {
 
 /**
  * ServerSidebarItem component
- * 
- * Props:
- * @param {string} id - Server unique ID
- * @param {string} name - Server name
- * @param {string} imageUrl - Server icon image URL
- * @param {boolean} isActive - Whether the server is currently selected
- * @param {boolean} hasNotification - Whether the server has unread messages
- * @param {number} mentionsCount - Number of mentions in the server
  */
 const ServerSidebarItem = ({
   id,
@@ -24,13 +17,31 @@ const ServerSidebarItem = ({
   isActive,
   hasNotification,
   mentionsCount,
+  onServerClick, // BƯỚC 3: Nhận cái hàm này từ ông nội App.jsx qua bố Sidebar
 }) => {
+
+  // 1. Tưởng tượng useState như một cái CÔNG TẮC ĐÈN (ON/OFF)
+  const [isSeen, setIsSeen] = useState(false);
+
+  // Hàm này bây giờ làm 2 việc: vừa đổi trạng thái "đã xem", vừa báo cho App.jsx biết tên server
+  const handleClick = () => {
+    setIsSeen(true);
+    if (onServerClick) {
+      onServerClick(name); // Báo cho App.jsx: "Đổi tên Display thành [name] cho tôi!"
+    }
+  };
+
+
   return (
     <TooltipProvider>
       <Tooltip delayDuration={0}>
         <TooltipTrigger asChild>
-          <button className="group relative flex items-center mb-3 focus:outline-none">
-            {/* Pill Indicator (Thanh trắng bên trái) */}
+          {/* 3. onClick={handleClick}: Khi bấm chuột vào nút này, nó sẽ gọi hàm ở trên */}
+          <button 
+            onClick={handleClick}
+            className="group relative flex items-center mb-3 focus:outline-none"
+          >
+            {/* Thanh trắng bên trái */}
             <div
               className={cn(
                 "absolute left-0 bg-white rounded-r-full transition-all duration-200 w-[4px]",
@@ -39,15 +50,14 @@ const ServerSidebarItem = ({
               )}
             />
 
-            {/* Server Icon Container & Shape Hover Effect */}
+            {/* Icon Server */}
             <div
               className={cn(
                 "relative flex mx-3 h-[48px] w-[48px] transition-all duration-200 overflow-visible",
-                "bg-[#313338] text-white", // Default Discord background for icons
+                "bg-[#313338] text-white",
                 isActive ? "rounded-[16px]" : "rounded-[50%] group-hover:rounded-[16px]"
               )}
             >
-              {/* Icon Image or Initial */}
               <div className={cn(
                 "w-full h-full overflow-hidden transition-all duration-200",
                 isActive ? "rounded-[16px]" : "rounded-[50%] group-hover:rounded-[16px]"
@@ -65,8 +75,8 @@ const ServerSidebarItem = ({
                 )}
               </div>
 
-              {/* Badge (Mentions) */}
-              {mentionsCount > 0 && (
+              {/* 4. CHỈ HIỆN BADGE NẾU (có tin nhắn) VÀ (chưa bấm vào - !isSeen) */}
+              {mentionsCount > 0 && !isSeen && (
                 <div className="absolute -bottom-1 -right-1 bg-red-500 text-white text-[11px] font-bold rounded-full min-w-[20px] h-5 px-1 flex items-center justify-center border-[3px] border-[#1e1f22]">
                   {mentionsCount}
                 </div>
