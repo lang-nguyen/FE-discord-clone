@@ -2,7 +2,7 @@ import { Button } from "@/shared/components/ui/Button";
 import { ImageEditorDialog } from "@/shared/components/ui/ImageEditorDialog";
 import { useServerIcon } from "@/features/servers/composables/server-icon";
 
-export const ServerIconSection = ({ avatarUrl, onChange }) => {
+export const ServerIconSection = ({ avatarUrl, serverName, onChange }) => {
   const icon = useServerIcon({ onIconChange: onChange });
 
   return (
@@ -13,6 +13,7 @@ export const ServerIconSection = ({ avatarUrl, onChange }) => {
       <p className="text-xs text-gray-500 mb-3">
         We recommend an image of at least 512x512.
       </p>
+
       <div className="flex items-center gap-3">
         <Button
           size="sm"
@@ -33,6 +34,7 @@ export const ServerIconSection = ({ avatarUrl, onChange }) => {
 
       {/* Hidden file input */}
       <input
+        id="server-icon-upload"
         ref={icon.fileInputRef}
         type="file"
         accept="image/*"

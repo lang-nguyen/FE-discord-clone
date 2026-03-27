@@ -8,110 +8,23 @@ import {
 } from "./Dialog";
 import { Button } from "./Button";
 
+import { useImageEditor } from "../../composables/useImageEditor";
+
 const DEFAULT_ZOOM = 1;
 const MIN_ZOOM = 1;
 const MAX_ZOOM = 3;
 const ZOOM_STEP = 0.01;
 
 export const ImageEditorDialog = ({ open, onOpenChange, imageSrc, onApply }) => {
-  const [zoom, setZoom] = React.useState(DEFAULT_ZOOM);
-  const [position, setPosition] = React.useState({ x: 0, y: 0 });
-  const [dragging, setDragging] = React.useState(false);
-  const [dragStart, setDragStart] = React.useState({ x: 0, y: 0 });
-  const containerRef = React.useRef(null);
-
-  // Reset state when dialog opens with new image
-  React.useEffect(() => {
-    if (open) {
-      setZoom(DEFAULT_ZOOM);
-      setPosition({ x: 0, y: 0 });
-    }
-  }, [open, imageSrc]);
-
-  const handleReset = () => {
-    setZoom(DEFAULT_ZOOM);
-    setPosition({ x: 0, y: 0 });
-  };
-
-  const handleApply = () => {
-    if (!imageSrc) return;
-
-    const img = new Image();
-    img.onload = () => {
-      const canvas = document.createElement("canvas");
-      const size = 512;
-      canvas.width = size;
-      canvas.height = size;
-      const ctx = canvas.getContext("2d");
-
-      const container = containerRef.current;
-      if (!container) return;
-
-      const containerSize = container.offsetWidth;
-      const imgAspect = img.width / img.height;
-
-      // Fit image to cover container
-      let baseW, baseH;
-      if (imgAspect > 1) {
-        baseH = containerSize;
-        baseW = containerSize * imgAspect;
-      } else {
-        baseW = containerSize;
-        baseH = containerSize / imgAspect;
-      }
-
-      const drawW = baseW * zoom;
-      const drawH = baseH * zoom;
-      const dx = (containerSize - drawW) / 2 + position.x;
-      const dy = (containerSize - drawH) / 2 + position.y;
-
-      // Map to canvas
-      const ratio = size / containerSize;
-      ctx.drawImage(img, dx * ratio, dy * ratio, drawW * ratio, drawH * ratio);
-
-      canvas.toBlob((blob) => {
-        if (blob) {
-          const url = URL.createObjectURL(blob);
-          onApply(url);
-          onOpenChange(false);
-        }
-      }, "image/png");
-    };
-    img.src = imageSrc;
-  };
-
-  // Drag handlers
-  const handleMouseDown = (e) => {
-    e.preventDefault();
-    setDragging(true);
-    setDragStart({ x: e.clientX - position.x, y: e.clientY - position.y });
-  };
-
-  const handleMouseMove = React.useCallback(
-    (e) => {
-      if (!dragging) return;
-      setPosition({
-        x: e.clientX - dragStart.x,
-        y: e.clientY - dragStart.y,
-      });
-    },
-    [dragging, dragStart]
-  );
-
-  const handleMouseUp = React.useCallback(() => {
-    setDragging(false);
-  }, []);
-
-  React.useEffect(() => {
-    if (dragging) {
-      window.addEventListener("mousemove", handleMouseMove);
-      window.addEventListener("mouseup", handleMouseUp);
-      return () => {
-        window.removeEventListener("mousemove", handleMouseMove);
-        window.removeEventListener("mouseup", handleMouseUp);
-      };
-    }
-  }, [dragging, handleMouseMove, handleMouseUp]);
+  const {
+    zoom,
+    setZoom,
+    position,
+    containerRef,
+    handleReset,
+    handleApply,
+    handleMouseDown,
+  } = useImageEditor({ open, onOpenChange, imageSrc, onApply });
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

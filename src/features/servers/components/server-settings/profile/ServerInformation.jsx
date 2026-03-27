@@ -22,6 +22,7 @@ export const ServerInformation = ({ data, onUpdateField }) => {
 
       <ServerIconSection
         avatarUrl={data.avatarUrl}
+        serverName={data.serverName}
         onChange={(value) => onUpdateField("avatarUrl", value)}
       />
 
