@@ -2,6 +2,7 @@ import { ServerSettingsSidebar } from "./ServerSettingsSidebar";
 import { ContentArea } from "./ContentArea";
 import { ScrollArea } from "@/shared/components/ui/ScrollArea";
 import { UnsavedChangesBar } from "./UnsavedChangesBar";
+import { DeleteServerDialog } from "./delete/DeleteServerDialog";
 
 export function ServerSettingLayout({
   activeTab,
@@ -9,10 +10,11 @@ export function ServerSettingLayout({
   onClose,
   serverName,
   profileData,
-  onProfileChange,
+  onUpdateField,
   hasChanges,
   onReset,
   onSave,
+  deleteConfirm,
 }) {
   return (
     <div className="h-screen flex bg-[#2b2d31] relative">
@@ -25,11 +27,16 @@ export function ServerSettingLayout({
           activeTab={activeTab}
           onTabChange={onTabChange}
           serverName={serverName}
+          onDeleteServer={deleteConfirm.openDialog}
         />
       </div>
 
       <ScrollArea className="flex-1 h-screen">
-        <div className="max-w-[740px] py-[60px] px-10">
+        <div
+          className={`py-[60px] px-10 ${
+            activeTab === "members" ? "max-w-[1024px]" : "max-w-[740px]"
+          }`}
+        >
           {/* CLOSE */}
           <button
             onClick={onClose}
@@ -58,7 +65,7 @@ export function ServerSettingLayout({
             <ContentArea
               activeTab={activeTab}
               profileData={profileData}
-              onProfileChange={onProfileChange}
+              onUpdateField={onUpdateField}
             />
           </div>
         </div>
@@ -68,6 +75,17 @@ export function ServerSettingLayout({
       {hasChanges && (
         <UnsavedChangesBar onReset={onReset} onSave={onSave} />
       )}
+
+      {/* Delete server dialog */}
+      <DeleteServerDialog
+        open={deleteConfirm.dialogOpen}
+        onOpenChange={deleteConfirm.handleOpenChange}
+        serverName={serverName}
+        confirmName={deleteConfirm.confirmName}
+        onConfirmNameChange={deleteConfirm.setConfirmName}
+        isMatch={deleteConfirm.isMatch}
+        onDelete={deleteConfirm.handleDelete}
+      />
     </div>
   );
 }

@@ -1,39 +1,9 @@
-import { useRef, useState } from "react";
 import { Button } from "@/shared/components/ui/Button";
 import { ImageEditorDialog } from "@/shared/components/ui/ImageEditorDialog";
+import { useServerIcon } from "@/features/servers/composables/server-icon";
 
 export const ServerIconSection = ({ avatarUrl, onChange }) => {
-  const fileInputRef = useRef(null);
-  const [editorOpen, setEditorOpen] = useState(false);
-  const [rawImageSrc, setRawImageSrc] = useState(null);
-
-  const handleFileSelect = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const objectUrl = URL.createObjectURL(file);
-    setRawImageSrc(objectUrl);
-    setEditorOpen(true);
-
-    e.target.value = "";
-  };
-
-  const handleApply = (croppedUrl) => {
-    setRawImageSrc(null);
-    onChange(croppedUrl);
-  };
-
-  const handleRemove = () => {
-    onChange("");
-  };
-
-  const handleEditorClose = (open) => {
-    if (!open && rawImageSrc) {
-      URL.revokeObjectURL(rawImageSrc);
-      setRawImageSrc(null);
-    }
-    setEditorOpen(open);
-  };
+  const icon = useServerIcon({ onIconChange: onChange });
 
   return (
     <div className="mb-6">
@@ -47,37 +17,35 @@ export const ServerIconSection = ({ avatarUrl, onChange }) => {
         <Button
           size="sm"
           variant="primary"
-          onClick={() => fileInputRef.current?.click()}
+          onClick={icon.openFilePicker}
         >
           Change Server Icon
         </Button>
-        {avatarUrl && (
-          <Button
-            size="sm"
-            variant="ghost"
-            className="text-red-400 hover:text-red-300 hover:bg-transparent"
-            onClick={handleRemove}
-          >
-            Remove Icon
-          </Button>
-        )}
+        <Button
+          size="sm"
+          variant="ghost"
+          className="text-red-400 hover:text-red-300 hover:bg-transparent"
+          onClick={icon.handleRemove}
+        >
+          Remove Icon
+        </Button>
       </div>
 
       {/* Hidden file input */}
       <input
-        ref={fileInputRef}
+        ref={icon.fileInputRef}
         type="file"
         accept="image/*"
         className="hidden"
-        onChange={handleFileSelect}
+        onChange={icon.handleFileSelect}
       />
 
       {/* Image editor dialog */}
       <ImageEditorDialog
-        open={editorOpen}
-        onOpenChange={handleEditorClose}
-        imageSrc={rawImageSrc}
-        onApply={handleApply}
+        open={icon.editorOpen}
+        onOpenChange={icon.handleEditorClose}
+        imageSrc={icon.rawImageSrc}
+        onApply={icon.handleApply}
       />
     </div>
   );

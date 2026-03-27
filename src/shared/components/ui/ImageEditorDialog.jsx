@@ -127,7 +127,7 @@ export const ImageEditorDialog = ({ open, onOpenChange, imageSrc, onApply }) => 
         <div className="px-6 py-5">
           <div
             ref={containerRef}
-            className="relative w-full aspect-square rounded-lg overflow-hidden bg-[#1e1f22] cursor-grab active:cursor-grabbing select-none"
+            className="relative w-full aspect-square rounded-lg overflow-hidden bg-[#1e1f22] border border-[#3b3d44]/50 cursor-grab active:cursor-grabbing select-none"
             onMouseDown={handleMouseDown}
           >
             {imageSrc && (
