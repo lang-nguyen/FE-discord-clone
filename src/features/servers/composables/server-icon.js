@@ -31,11 +31,18 @@ export function useServerIcon({ onIconChange }) {
     e.target.value = "";
   }, []);
 
-  // Apply ảnh đã crop từ editor
+  // Apply ảnh đã crop từ editor (Nhận File từ dưới truyền lên)
   const handleApply = useCallback(
-    (croppedUrl) => {
+    async (croppedFile) => {
       setRawImageSrc(null);
-      onIconChange(croppedUrl);
+
+      try {
+        const formData = new FormData();
+        formData.append("file", croppedFile);
+        console.log("Đang gọi API upload file...", croppedFile);
+      } catch (error) {
+        console.error("Lỗi khi upload ảnh lên server:", error);
+      }
     },
     [onIconChange]
   );

@@ -109,6 +109,41 @@ export function useImageEditor({ open, imageSrc }) {
     startRef.current = null;
   };
 
+  // -- XỬ LÝ XUẤT ẢNH --
+  const handleApply = (onApplyCallback, onOpenChangeCallback) => {
+    if (!imageSrc) return;
+
+    const i = new Image();
+    i.onload = () => {
+      const canvas = document.createElement("canvas");
+      const size = 512;
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext("2d");
+
+      const ratio = size / cropSize;
+
+      ctx.save();
+      ctx.translate(size / 2, size / 2);
+      ctx.translate(-safePos.x * ratio, -safePos.y * ratio);
+      ctx.rotate((rotation * Math.PI) / 180);
+
+      const finalW = i.width * scale * zoom * ratio;
+      const finalH = i.height * scale * zoom * ratio;
+      ctx.drawImage(i, -finalW / 2, -finalH / 2, finalW, finalH);
+      ctx.restore();
+
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const file = new File([blob], "avatar.png", { type: "image/png" });
+          onApplyCallback(file);
+          onOpenChangeCallback(false);
+        }
+      }, "image/png");
+    };
+    i.src = imageSrc;
+  };
+
   return {
     containerRef,
     zoom,
@@ -125,6 +160,7 @@ export function useImageEditor({ open, imageSrc }) {
     drawH,
     cropSize,
     scale,
+    handleApply,
     onPointerDown,
     onPointerMove,
     onPointerUp,

@@ -8,7 +8,6 @@ import {
 } from "./Dialog";
 import { Button } from "./Button";
 
-// Kết nối tính toán 90% Logic mới từ hook!
 import { useImageEditor } from "../../composables/useImageEditor";
 
 export const ImageEditorDialog = ({ open, onOpenChange, imageSrc, onApply }) => {
@@ -21,53 +20,14 @@ export const ImageEditorDialog = ({ open, onOpenChange, imageSrc, onApply }) => 
     pos,
     drawW,
     drawH,
-    cropSize, // KHUNG CROP TÍNH THEO CHUẨN 90% ẢNH VÀ 90% CONTAINER!
+    cropSize,
     scale,
     handleReset,
+    handleApply,
     onPointerDown,
     onPointerMove,
     onPointerUp,
   } = useImageEditor({ open, imageSrc });
-
-  // Xử lý nút Apply ngay trực tiếp ở Component
-  const handleApply = () => {
-    if (!imageSrc) return;
-
-    const img = new Image();
-    img.onload = () => {
-      const canvas = document.createElement("canvas");
-      const size = 512;
-      canvas.width = size;
-      canvas.height = size;
-      const ctx = canvas.getContext("2d");
-
-      // Tỉ lệ scale thực tế từ `cropSize` (Frame UI) ra 512px
-      const ratio = size / cropSize;
-
-      ctx.save();
-      // 1. Zoom trung tâm Canvas
-      ctx.translate(size / 2, size / 2);
-
-      // 2. Map điểm User kéo Frame (`pos`) vô toạ độ của Canvas (-pos.x)
-      ctx.translate(-pos.x * ratio, -pos.y * ratio);
-      ctx.rotate((rotation * Math.PI) / 180);
-
-      // 3. Render!
-      const finalW = img.width * scale * zoom * ratio;
-      const finalH = img.height * scale * zoom * ratio;
-      ctx.drawImage(img, -finalW / 2, -finalH / 2, finalW, finalH);
-      ctx.restore();
-
-      canvas.toBlob((blob) => {
-        if (blob) {
-          const url = URL.createObjectURL(blob);
-          onApply(url);
-          onOpenChange(false);
-        }
-      }, "image/png");
-    };
-    img.src = imageSrc;
-  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -186,7 +146,7 @@ export const ImageEditorDialog = ({ open, onOpenChange, imageSrc, onApply }) => 
             </Button>
             <Button
               className="bg-[#5865f2] hover:bg-[#4752c4] text-white px-8 transition-colors active:translate-y-px"
-              onClick={handleApply}
+              onClick={() => handleApply(onApply, onOpenChange)}
             >
               Apply
             </Button>
