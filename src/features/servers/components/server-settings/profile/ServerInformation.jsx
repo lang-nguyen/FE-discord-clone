@@ -4,7 +4,12 @@ import { ServerBannerSelector } from "./forms/ServerBannerSelector";
 import { ServerDescriptionField } from "./forms/ServerDescriptionField";
 import { ServerPrivacyToggle } from "./forms/ServerPrivacyToggle";
 
-export const ServerInformation = ({ data, onUpdateField }) => {
+export const ServerInformation = ({ 
+  data, 
+  onUpdateField, 
+  onOpenIconPicker, 
+  onRemoveIcon 
+}) => {
   return (
     <div className="flex-1 min-w-0 max-w-[520px]">
       <h2 className="text-xl font-semibold text-gray-200">Server Profile</h2>
@@ -21,9 +26,8 @@ export const ServerInformation = ({ data, onUpdateField }) => {
       <div className="border-t border-[#3b3d44] my-6" />
 
       <ServerIconSection
-        avatarUrl={data.avatarUrl}
-        serverName={data.serverName}
-        onChange={(value) => onUpdateField("avatarUrl", value)}
+        onOpenIconPicker={onOpenIconPicker}
+        onRemoveIcon={onRemoveIcon}
       />
 
       <div className="border-t border-[#3b3d44] my-6" />

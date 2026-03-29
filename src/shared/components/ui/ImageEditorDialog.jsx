@@ -8,114 +8,184 @@ import {
 } from "./Dialog";
 import { Button } from "./Button";
 
+// Kết nối tính toán 90% Logic mới từ hook!
 import { useImageEditor } from "../../composables/useImageEditor";
-
-const DEFAULT_ZOOM = 1;
-const MIN_ZOOM = 1;
-const MAX_ZOOM = 3;
-const ZOOM_STEP = 0.01;
 
 export const ImageEditorDialog = ({ open, onOpenChange, imageSrc, onApply }) => {
   const {
+    containerRef,
     zoom,
     setZoom,
-    position,
-    containerRef,
+    rotation,
+    handleRotate,
+    pos,
+    drawW,
+    drawH,
+    cropSize, // KHUNG CROP TÍNH THEO CHUẨN 90% ẢNH VÀ 90% CONTAINER!
+    scale,
     handleReset,
-    handleApply,
-    handleMouseDown,
-  } = useImageEditor({ open, onOpenChange, imageSrc, onApply });
+    onPointerDown,
+    onPointerMove,
+    onPointerUp,
+  } = useImageEditor({ open, imageSrc });
+
+  // Xử lý nút Apply ngay trực tiếp ở Component
+  const handleApply = () => {
+    if (!imageSrc) return;
+
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const size = 512;
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext("2d");
+
+      // Tỉ lệ scale thực tế từ `cropSize` (Frame UI) ra 512px
+      const ratio = size / cropSize;
+
+      ctx.save();
+      // 1. Zoom trung tâm Canvas
+      ctx.translate(size / 2, size / 2);
+
+      // 2. Map điểm User kéo Frame (`pos`) vô toạ độ của Canvas (-pos.x)
+      ctx.translate(-pos.x * ratio, -pos.y * ratio);
+      ctx.rotate((rotation * Math.PI) / 180);
+
+      // 3. Render!
+      const finalW = img.width * scale * zoom * ratio;
+      const finalH = img.height * scale * zoom * ratio;
+      ctx.drawImage(img, -finalW / 2, -finalH / 2, finalW, finalH);
+      ctx.restore();
+
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const url = URL.createObjectURL(blob);
+          onApply(url);
+          onOpenChange(false);
+        }
+      }, "image/png");
+    };
+    img.src = imageSrc;
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-[#313338] border-none max-w-[480px] p-0 gap-0 rounded-xl">
-        {/* Header */}
+      <DialogContent
+        className="bg-[#313338] border-none max-w-[480px] p-0 gap-0 rounded-[12px] overflow-hidden outline-none"
+        onInteractOutside={(e) => e.preventDefault()}
+        onEscapeKeyDown={(e) => e.preventDefault()}
+      >
+        {/* HEADER */}
         <DialogHeader className="px-6 pt-5 pb-0">
-          <DialogTitle className="text-white text-xl font-semibold">
+          <DialogTitle className="text-white text-xl font-bold">
             Edit Image
           </DialogTitle>
         </DialogHeader>
 
-        {/* Image preview area */}
+        {/* DRAG AREA (Container > Image > Crop Frame) */}
         <div className="px-6 py-5">
           <div
             ref={containerRef}
-            className="relative w-full aspect-square rounded-lg overflow-hidden bg-[#1e1f22] border border-[#3b3d44]/50 cursor-grab active:cursor-grabbing select-none"
-            onMouseDown={handleMouseDown}
+            className="relative w-full h-[320px] rounded-lg overflow-hidden bg-[#111214] select-none touch-none"
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={onPointerUp}
+            onPointerCancel={onPointerUp}
+            onPointerLeave={onPointerUp}
+            style={{ cursor: "grab" }}
           >
-            {imageSrc && (
-              <img
-                src={imageSrc}
-                alt="Preview"
-                className="absolute top-1/2 left-1/2 pointer-events-none max-w-none"
-                style={{
-                  transform: `translate(-50%, -50%) translate(${position.x}px, ${position.y}px) scale(${zoom})`,
-                  transformOrigin: "center center",
-                  minWidth: "100%",
-                  minHeight: "100%",
-                  objectFit: "cover",
-                }}
-                draggable={false}
-              />
+            {/* Lớp Hình Ảnh (Nằm Ớ Giữa) */}
+            {imageSrc && drawW > 0 && (
+              <div
+                className="absolute top-1/2 left-1/2 pointer-events-none"
+                style={{ transform: `translate(calc(-50% + ${pos.x}px), calc(-50% + ${pos.y}px))` }}
+              >
+                <img
+                  src={imageSrc}
+                  alt="Preview"
+                  className="absolute top-1/2 left-1/2 pointer-events-none max-w-none shadow-xl"
+                  style={{
+                    width: `${drawW}px`,
+                    height: `${drawH}px`,
+                    transform: `translate(-50%, -50%) rotate(${rotation}deg)`,
+                  }}
+                  draggable={false}
+                />
+              </div>
+            )}
+
+            {/* Lớp Crop Frame (Vùng Cắt Cố Định - Static & Fixed Focus Center) */}
+            {cropSize > 0 && (
+              <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+                <div
+                  className="rounded-xl border-2 border-white/60 shrink-0 relative"
+                  style={{
+                    width: `${cropSize}px`,
+                    height: `${cropSize}px`,
+                    boxShadow: "0 0 0 9999px rgba(0, 0, 0, 0.65)",
+                  }}
+                >
+                </div>
+              </div>
             )}
           </div>
         </div>
 
-        {/* Controls: icons + zoom slider */}
+        {/* CONTROLS AREA */}
         <div className="px-6 pb-5">
-          <div className="flex items-center gap-3">
-            {/* Small image icon */}
-            <svg className="w-4 h-4 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0022.5 18.75V5.25A2.25 2.25 0 0020.25 3H3.75A2.25 2.25 0 001.5 5.25v13.5A2.25 2.25 0 003.75 21z" />
+          <div className="flex items-center justify-between gap-3">
+            <svg viewBox="0 0 24 24" className="w-4 h-4 text-gray-400 shrink-0" fill="currentColor">
+              <path d="M21 19V5C21 3.89 20.1 3 19 3H5C3.89 3 3 3.89 3 5V19C3 20.1 3.89 21 5 21H19C20.1 21 21 20.1 21 19ZM8.5 13.5L11 16.51L14.5 12L19 18H5L8.5 13.5Z" />
             </svg>
 
-            {/* Dot */}
-            <span className="w-3 h-3 rounded-full bg-gray-500 shrink-0" />
+            <span className="w-2 h-2 rounded-full bg-gray-500 shrink-0" />
 
-            {/* Slider */}
             <input
               type="range"
-              min={MIN_ZOOM}
-              max={MAX_ZOOM}
-              step={ZOOM_STEP}
+              min={1}
+              max={4}
+              step={0.01}
               value={zoom}
               onChange={(e) => setZoom(parseFloat(e.target.value))}
-              className="flex-1 h-1 accent-white bg-gray-600 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:cursor-pointer"
+              className="flex-1 h-1.5 bg-[#4e5058] rounded-full appearance-none cursor-grab active:cursor-grabbing hover:bg-[#5c5f66] [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white"
             />
 
-            {/* Large image icon */}
-            <svg className="w-5 h-5 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0022.5 18.75V5.25A2.25 2.25 0 0020.25 3H3.75A2.25 2.25 0 001.5 5.25v13.5A2.25 2.25 0 003.75 21z" />
+            <svg viewBox="0 0 24 24" className="w-5 h-5 text-gray-400 shrink-0" fill="currentColor">
+              <path d="M21 19V5C21 3.89 20.1 3 19 3H5C3.89 3 3 3.89 3 5V19C3 20.1 3.89 21 5 21H19C20.1 21 21 20.1 21 19ZM8.5 13.5L11 16.51L14.5 12L19 18H5L8.5 13.5Z" />
             </svg>
 
-            {/* Crop icon */}
-            <svg className="w-5 h-5 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H7.5m8.25 8.25H21m-3.375-3.375V3.75" />
-            </svg>
+            <button
+              onClick={handleRotate}
+              className="w-5 h-5 ml-2 text-gray-300 hover:text-white transition-colors flex items-center justify-center shrink-0"
+              aria-label="Rotate Image"
+            >
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+              </svg>
+            </button>
           </div>
         </div>
 
-        {/* Footer */}
-        <DialogFooter className="px-6 py-4 border-t border-[#3b3d44]/50 !flex !flex-row items-center !justify-between">
+        {/* FOOTER */}
+        <DialogFooter className="bg-[#2b2d31] px-6 py-4 flex items-center justify-between sm:justify-between w-full h-[72px]">
           <button
             onClick={handleReset}
-            className="text-sm text-blue-400 hover:text-blue-300 font-medium transition-colors"
+            className="text-sm text-[#00a8fc] hover:underline font-medium"
           >
             Reset
           </button>
-          <div className="flex gap-3">
+
+          <div className="flex items-center gap-3">
             <Button
               variant="ghost"
-              size="sm"
-              className="text-gray-300 hover:text-white hover:bg-[#404249] rounded-md px-6"
+              className="text-white hover:underline focus:ring-0 active:translate-y-0"
               onClick={() => onOpenChange(false)}
             >
               Cancel
             </Button>
             <Button
-              variant="primary"
-              size="sm"
-              className="bg-[#5865f2] hover:bg-[#4752c4] rounded-md px-8"
+              className="bg-[#5865f2] hover:bg-[#4752c4] text-white px-8 transition-colors active:translate-y-px"
               onClick={handleApply}
             >
               Apply

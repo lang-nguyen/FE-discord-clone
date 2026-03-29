@@ -1,114 +1,132 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect } from "react";
 
-const DEFAULT_ZOOM = 1;
+const CONFIG = {
+  // Ảnh gốc ban đầu sẽ hiển thị tự động lấp đầy 90% diện tích màn hình chứa nó
+  COVER_RATIO: 0.9,
+  // Khung Crop mặc định sẽ lấy 90% kích thước của bức ảnh (chiều nhỏ nhất)
+  CROP_RATIO: 0.9,
+};
 
-export function useImageEditor({ open, onOpenChange, imageSrc, onApply }) {
-  const [zoom, setZoom] = useState(DEFAULT_ZOOM);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [dragging, setDragging] = useState(false);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+export function useImageEditor({ open, imageSrc }) {
   const containerRef = useRef(null);
 
-  // Reset state when dialog opens with new image
+  const [img, setImg] = useState({ w: 0, h: 0 });
+  const [box, setBox] = useState({ w: 0, h: 0 });
+
+  const [zoom, setZoom] = useState(1);
+  const [rotation, setRotation] = useState(0);
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+
+  // 1. Lắng nghe ảnh thay đổi -> Tính kích thước gốc
   useEffect(() => {
-    if (open) {
-      setZoom(DEFAULT_ZOOM);
-      setPosition({ x: 0, y: 0 });
+    if (!imageSrc) return;
+    const i = new Image();
+    i.onload = () => setImg({ w: i.width, h: i.height });
+    i.src = imageSrc;
+  }, [imageSrc]);
+
+  // 2. Lắng nghe màn hình mở -> Tính kích thước khung chứa
+  useEffect(() => {
+    if (open && containerRef.current) {
+      setBox({
+        w: containerRef.current.offsetWidth,
+        h: containerRef.current.offsetHeight,
+      });
     }
   }, [open, imageSrc]);
 
-  const handleReset = useCallback(() => {
-    setZoom(DEFAULT_ZOOM);
-    setPosition({ x: 0, y: 0 });
-  }, []);
-
-  const handleApply = useCallback(() => {
-    if (!imageSrc) return;
-
-    const img = new Image();
-    img.onload = () => {
-      const canvas = document.createElement("canvas");
-      const size = 512;
-      canvas.width = size;
-      canvas.height = size;
-      const ctx = canvas.getContext("2d");
-
-      const container = containerRef.current;
-      if (!container) return;
-
-      const containerSize = container.offsetWidth;
-      const imgAspect = img.width / img.height;
-
-      // Fit image to cover container
-      let baseW, baseH;
-      if (imgAspect > 1) {
-        baseH = containerSize;
-        baseW = containerSize * imgAspect;
-      } else {
-        baseW = containerSize;
-        baseH = containerSize / imgAspect;
-      }
-
-      const drawW = baseW * zoom;
-      const drawH = baseH * zoom;
-      const dx = (containerSize - drawW) / 2 + position.x;
-      const dy = (containerSize - drawH) / 2 + position.y;
-
-      // Map to canvas
-      const ratio = size / containerSize;
-      ctx.drawImage(img, dx * ratio, dy * ratio, drawW * ratio, drawH * ratio);
-
-      canvas.toBlob((blob) => {
-        if (blob) {
-          const url = URL.createObjectURL(blob);
-          onApply(url);
-          onOpenChange(false);
-        }
-      }, "image/png");
-    };
-    img.src = imageSrc;
-  }, [imageSrc, zoom, position, onApply, onOpenChange]);
-
-  // Drag handlers
-  const handleMouseDown = useCallback((e) => {
-    e.preventDefault();
-    setDragging(true);
-    setDragStart({ x: e.clientX - position.x, y: e.clientY - position.y });
-  }, [position]);
-
-  const handleMouseMove = useCallback(
-    (e) => {
-      if (!dragging) return;
-      setPosition({
-        x: e.clientX - dragStart.x,
-        y: e.clientY - dragStart.y,
-      });
-    },
-    [dragging, dragStart]
-  );
-
-  const handleMouseUp = useCallback(() => {
-    setDragging(false);
-  }, []);
-
+  // 3. Reset thông số chuẩn ngay khi mở modal
   useEffect(() => {
-    if (dragging) {
-      window.addEventListener("mousemove", handleMouseMove);
-      window.addEventListener("mouseup", handleMouseUp);
-      return () => {
-        window.removeEventListener("mousemove", handleMouseMove);
-        window.removeEventListener("mouseup", handleMouseUp);
-      };
+    if (open) {
+      setZoom(1);
+      setRotation(0);
+      setPos({ x: 0, y: 0 });
     }
-  }, [dragging, handleMouseMove, handleMouseUp]);
+  }, [open, imageSrc]);
+
+  // -- TOÁN HỌC TRỌNG TÂM --
+  // 4. Kích thước thị giác sau khi xoay
+  const isRotated = rotation % 180 !== 0;
+  const vW = isRotated ? img.h : img.w;
+  const vH = isRotated ? img.w : img.h;
+
+  let scale = 1;
+  let cropSize = 240;
+
+  if (vW > 0 && vH > 0 && box.w > 0 && box.h > 0) {
+    // Ép bức ảnh chiếm tỷ lệ 90% container (COVER_RATIO) - vừa khít trên chiều nhỏ hơn
+    const targetW = box.w * CONFIG.COVER_RATIO;
+    const targetH = box.h * CONFIG.COVER_RATIO;
+    scale = Math.max(targetW / vW, targetH / vH);
+
+    const baseUI_W = vW * scale;
+    const baseUI_H = vH * scale;
+
+    // Khung crop luôn bằng 90% bức ảnh ban đầu (CROP_RATIO)
+    cropSize = Math.floor(Math.min(baseUI_W, baseUI_H) * CONFIG.CROP_RATIO);
+  }
+
+  // 5. Tính kích thước DOM thực tế cho <img>
+  const drawW = img.w * scale * zoom;
+  const drawH = img.h * scale * zoom;
+
+  // 6. Tính kích thước UI trên màn hình để kiểm tra viền chạm (Constraint Boundaries)
+  const uiW = vW * scale * zoom;
+  const uiH = vH * scale * zoom;
+
+  const maxX = Math.max(0, (uiW - cropSize) / 2);
+  const maxY = Math.max(0, (uiH - cropSize) / 2);
+
+  const clamp = (x, y) => ({
+    x: Math.max(-maxX, Math.min(maxX, x)),
+    y: Math.max(-maxY, Math.min(maxY, y)),
+  });
+
+  const safePos = clamp(pos.x, pos.y);
+
+  // -- CÁC HÀM XỬ LÝ KÉO DI CHUYỂN --
+  const startRef = useRef(null);
+
+  const onPointerDown = (e) => {
+    e.preventDefault();
+    startRef.current = {
+      x: e.clientX,
+      y: e.clientY,
+      startX: safePos.x,
+      startY: safePos.y,
+    };
+    e.target.setPointerCapture(e.pointerId);
+  };
+
+  const onPointerMove = (e) => {
+    if (!startRef.current) return;
+    const dx = e.clientX - startRef.current.x;
+    const dy = e.clientY - startRef.current.y;
+    setPos(clamp(startRef.current.startX + dx, startRef.current.startY + dy));
+  };
+
+  const onPointerUp = () => {
+    startRef.current = null;
+  };
 
   return {
+    containerRef,
     zoom,
     setZoom,
-    position,
-    containerRef,
-    handleReset,
-    handleApply,
-    handleMouseDown,
+    rotation,
+    handleRotate: () => setRotation((r) => (r + 90) % 360),
+    handleReset: () => {
+      setZoom(1);
+      setRotation(0);
+      setPos({ x: 0, y: 0 });
+    },
+    pos: safePos,
+    drawW,
+    drawH,
+    cropSize,
+    scale,
+    onPointerDown,
+    onPointerMove,
+    onPointerUp,
   };
 }

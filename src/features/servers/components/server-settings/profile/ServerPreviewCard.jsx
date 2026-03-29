@@ -1,7 +1,7 @@
 import { Avatar, AvatarImage, AvatarFallback } from "@/shared/components/ui/Avatar";
 import { BANNER_COLORS } from "./forms/ServerBannerSelector";
 
-export const ServerPreviewCard = ({ data }) => {
+export const ServerPreviewCard = ({ data, onOpenIconPicker }) => {
   const {
     serverName,
     selectedBanner,
@@ -30,7 +30,7 @@ export const ServerPreviewCard = ({ data }) => {
           <div className="relative px-4">
             <div 
               className="absolute -top-6 cursor-pointer group"
-              onClick={() => document.getElementById('server-icon-upload')?.click()}
+              onClick={onOpenIconPicker}
             >
               <Avatar className="w-[52px] h-[52px] rounded-2xl border-[4px] border-[#232428] transition-opacity">
                 {avatarUrl ? (
