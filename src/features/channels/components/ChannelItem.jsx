@@ -74,6 +74,7 @@ const ChannelActions = ({
             {type === 'voice' && (
                 <ActionTooltip label="Open Chat">
                     <button
+                        aria-label="Open Chat"
                         onClick={(e) => {
                             e.stopPropagation();
                             onOpenChat?.();
@@ -84,8 +85,9 @@ const ChannelActions = ({
                     </button>
                 </ActionTooltip>
             )}
-            <ActionTooltip label="Invite to Voice">
+            <ActionTooltip label={type === 'voice' ? "Invite to Voice" : "Invite People"}>
                 <button
+                    aria-label={type === 'voice' ? "Invite to Voice" : "Invite People"}
                     onClick={(e) => {
                         e.stopPropagation();
                         onInviteToVoice?.();
@@ -97,6 +99,7 @@ const ChannelActions = ({
             </ActionTooltip>
             <ActionTooltip label="Edit Channel">
                 <button
+                    aria-label="Edit Channel"
                     onClick={(e) => {
                         e.stopPropagation();
                         onEditChannel?.();
@@ -123,11 +126,21 @@ const ChannelItem = ({
     onInviteToVoice,
     onEditChannel
 }) => {
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onChannelClick?.(e);
+        }
+    };
+
     return (
         <div
             onClick={onChannelClick}
+            onKeyDown={handleKeyDown}
+            role="button"
+            tabIndex={0}
             className={cn(
-                "group relative flex items-center justify-between px-2 py-1.5 mx-2 rounded-md cursor-pointer transition-colors",
+                "group relative flex items-center justify-between px-2 py-1.5 mx-2 rounded-md cursor-pointer transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[#5865F2]",
                 !isActive ? "hover:bg-[#35373C]" : "",
                 isActive ? "bg-[#3F4147] text-[#F2F3F5]" : (hasUnread ? "text-white font-bold" : "text-gray-400 hover:text-gray-200")
             )}

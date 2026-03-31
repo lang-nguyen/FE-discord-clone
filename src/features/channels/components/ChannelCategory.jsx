@@ -9,8 +9,9 @@ const ChannelCategory = ({
     children 
 }) => {
     const contentRef = useRef(null);
+    const isFirstRender = useRef(true);
     const [isExpanded, setIsExpanded] = useState(defaultExpanded);
-    const [height, setHeight] = useState('auto');
+    const [height, setHeight] = useState(defaultExpanded ? 'auto' : 0);
     const [showContent, setShowContent] = useState(defaultExpanded);
 
     const handleToggle = () => {
@@ -18,18 +19,31 @@ const ChannelCategory = ({
     };
 
     useEffect(() => {
+        if (isFirstRender.current) {
+            isFirstRender.current = false;
+            return;
+        }
+
+        let timeoutId;
+        let frameId;
+
         if (isExpanded) {
             setShowContent(true);
             setHeight(contentRef.current?.scrollHeight || 'auto');
         } else {
             setHeight(contentRef.current?.scrollHeight || 0);
-            requestAnimationFrame(() => {
+            frameId = requestAnimationFrame(() => {
                 setHeight(0);
             });
-            setTimeout(() => {
+            timeoutId = setTimeout(() => {
                 setShowContent(false);
             }, 200);
         }
+
+        return () => {
+            if (frameId) cancelAnimationFrame(frameId);
+            if (timeoutId) clearTimeout(timeoutId);
+        };
     }, [isExpanded]);
 
     return (
@@ -69,7 +83,12 @@ const ChannelCategory = ({
                     "overflow-hidden transition-[height] duration-200 ease-in-out",
                     !showContent && height === 0 ? "hidden" : "block"
                 )}
-                style={{ height: isExpanded ? 'auto' : height }}
+                style={{ height }}
+                onTransitionEnd={(e) => {
+                    if (e.target === e.currentTarget && e.propertyName === 'height' && isExpanded) {
+                        setHeight('auto');
+                    }
+                }}
             >
                 <div ref={contentRef}>
                     {children}
