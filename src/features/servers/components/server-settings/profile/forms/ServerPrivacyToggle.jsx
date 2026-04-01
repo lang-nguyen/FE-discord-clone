@@ -7,13 +7,16 @@ export const ServerPrivacyToggle = ({ isPrivate, onChange }) => {
         {/* Left info + toggle */}
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-1">
-            <h3 className="text-sm font-semibold text-gray-200">
+            <h3 id="privacy-toggle-label" className="text-sm font-semibold text-gray-200">
               Private Profile
             </h3>
             {/* Toggle */}
             <button
+              role="switch"
+              aria-checked={isPrivate}
+              aria-labelledby="privacy-toggle-label"
               onClick={() => onChange(!isPrivate)}
-              className={`relative w-10 h-6 rounded-full transition-colors ${
+              className={`relative w-10 h-6 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${
                 isPrivate ? "bg-[#5865f2]" : "bg-[#72767d]"
               }`}
             >

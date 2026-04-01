@@ -40,6 +40,11 @@ export function useServerIcon({ onIconChange }) {
         const formData = new FormData();
         formData.append("file", croppedFile);
         console.log("Đang gọi API upload file...", croppedFile);
+        
+        // Optimistically update the UI with the cropped image
+        const objectUrl = URL.createObjectURL(croppedFile);
+        onIconChange(objectUrl);
+        setEditorOpen(false);
       } catch (error) {
         console.error("Lỗi khi upload ảnh lên server:", error);
       }

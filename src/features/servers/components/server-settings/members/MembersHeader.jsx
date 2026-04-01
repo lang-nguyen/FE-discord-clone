@@ -8,7 +8,7 @@ export const MembersHeader = ({ showMembersInChannel, onToggleShowMembers }) => 
       {/* Show Members switch */}
       <div className="flex items-center justify-between mt-6 mb-8">
         <div>
-          <h3 className="text-[15px] text-gray-200 font-medium mb-1">
+          <h3 id="show-members-toggle-label" className="text-[15px] text-gray-200 font-medium mb-1">
             Show Members in Channel List
           </h3>
           <p className="text-sm text-gray-400">
@@ -18,8 +18,11 @@ export const MembersHeader = ({ showMembersInChannel, onToggleShowMembers }) => 
 
         {/* Simple mock switch */}
         <button
+          role="switch"
+          aria-checked={showMembersInChannel}
+          aria-labelledby="show-members-toggle-label"
           onClick={onToggleShowMembers}
-          className={`w-10 h-6 shrink-0 rounded-full p-1 transition-colors ${
+          className={`w-10 h-6 shrink-0 rounded-full p-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${
             showMembersInChannel ? "bg-green-500" : "bg-gray-600"
           }`}
         >

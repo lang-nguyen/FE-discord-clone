@@ -40,7 +40,7 @@ export function ServerSettingLayout({
           {/* CLOSE */}
           <button
             onClick={onClose}
-            className="fixed top-15 right-6 group flex flex-col items-center gap-1"
+            className="fixed top-[60px] right-6 group flex flex-col items-center gap-1"
           >
             <div className="w-9 h-9 rounded-full border-2 border-gray-500 flex items-center justify-center group-hover:border-white transition-colors">
               <svg

@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useMembers } from "@/features/servers/composables/members";
 import { TransferOwnershipDialog } from "./TransferOwnershipDialog";
 import { MembersHeader } from "./MembersHeader";

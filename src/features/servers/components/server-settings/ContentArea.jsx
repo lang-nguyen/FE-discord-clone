@@ -9,7 +9,14 @@ const TAB_COMPONENTS = {
 export const ContentArea = ({ activeTab, profileData, onUpdateField }) => {
   const Component = TAB_COMPONENTS[activeTab];
 
-  if (!Component) return null;
+  if (!Component) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[400px] text-center">
+        <h2 className="text-xl font-bold text-white mb-2">Coming Soon</h2>
+        <p className="text-[#a3a6aa]">This settings page is not yet implemented.</p>
+      </div>
+    );
+  }
 
   if (activeTab === "server-profile") {
     return <Component data={profileData} onUpdateField={onUpdateField} />;
