@@ -15,8 +15,8 @@ function App() {
   const [isDeafened, setIsDeafened] = useState(false);
 
   const mockUser = {
-    username: "sw...",
-    statusText: "sw...",
+    username: "Tên user dài",
+    statusText: "abcdefgh",
     avatarUrl: "https://github.com/shadcn.png", // Dùng avatar tạm
     onlineStatus: "online"
   };
