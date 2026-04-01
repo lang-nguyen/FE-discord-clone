@@ -1,6 +1,6 @@
 import { ChevronDown, Plus } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useId } from 'react';
 
 const ChannelCategory = ({ 
     title,
@@ -10,6 +10,8 @@ const ChannelCategory = ({
 }) => {
     const contentRef = useRef(null);
     const isFirstRender = useRef(true);
+    const headerId = useId();
+    const contentId = useId();
     const [isExpanded, setIsExpanded] = useState(defaultExpanded);
     const [height, setHeight] = useState(defaultExpanded ? 'auto' : 0);
     const [showContent, setShowContent] = useState(defaultExpanded);
@@ -49,8 +51,19 @@ const ChannelCategory = ({
     return (
         <div className="mb-2">
             <div 
-                className="flex items-center justify-between px-4 py-1 mb-[2px] cursor-pointer text-[#949BA4] hover:text-[#DBDEE1] transition-colors group"
+                id={headerId}
+                role="button"
+                tabIndex={0}
+                aria-expanded={isExpanded}
+                aria-controls={contentId}
+                className="flex items-center justify-between px-4 py-1 mb-[2px] cursor-pointer text-[#949BA4] hover:text-[#DBDEE1] transition-colors group focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#DBDEE1] rounded-sm"
                 onClick={handleToggle}
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleToggle();
+                    }
+                }}
             >
                 <div className="flex items-center flex-1 min-w-0">
                     <ChevronDown 
@@ -70,7 +83,7 @@ const ChannelCategory = ({
                             e.stopPropagation();
                             onAdd();
                         }}
-                        className="ml-1 p-0.5 rounded-sm hover:text-[#F2F3F5] transition-colors"
+                        className="ml-1 p-0.5 rounded-sm hover:text-[#F2F3F5] transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#DBDEE1]"
                         aria-label={`Add ${title}`}
                     >
                         <Plus className="w-4 h-4" />
@@ -79,6 +92,9 @@ const ChannelCategory = ({
             </div>
             
             <div 
+                id={contentId}
+                role="region"
+                aria-labelledby={headerId}
                 className={cn(
                     "overflow-hidden transition-[height] duration-200 ease-in-out",
                     !showContent && height === 0 ? "hidden" : "block"

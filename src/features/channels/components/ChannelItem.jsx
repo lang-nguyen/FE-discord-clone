@@ -1,19 +1,17 @@
 import { Hash, Volume2, Lock, UserPlus, Settings, MessageSquare } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
-import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/shared/components/ui/Tooltip';
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/shared/components/ui/Tooltip';
 
 // helper: ActionTooltip
 const ActionTooltip = ({ label, children }) => (
-    <TooltipProvider>
-        <Tooltip delayDuration={50}>
-            <TooltipTrigger asChild>
-                {children}
-            </TooltipTrigger>
-            <TooltipContent side="top">
-                <p>{label}</p>
-            </TooltipContent>
-        </Tooltip>
-    </TooltipProvider>
+    <Tooltip delayDuration={50}>
+        <TooltipTrigger asChild>
+            {children}
+        </TooltipTrigger>
+        <TooltipContent side="top">
+            <p>{label}</p>
+        </TooltipContent>
+    </Tooltip>
 );
 
 // helper: ChannelIcon
@@ -126,38 +124,34 @@ const ChannelItem = ({
     onInviteToVoice,
     onEditChannel
 }) => {
-    const handleKeyDown = (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            onChannelClick?.(e);
-        }
-    };
-
     return (
         <div
-            onClick={onChannelClick}
-            onKeyDown={handleKeyDown}
-            role="button"
-            tabIndex={0}
             className={cn(
-                "group relative flex items-center justify-between px-2 py-1.5 mx-2 rounded-md cursor-pointer transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[#5865F2]",
-                !isActive ? "hover:bg-[#35373C]" : "",
+                "group relative flex items-center justify-between px-2 py-1.5 mx-2 rounded-md transition-colors",
+                !isActive && "hover:bg-[#35373C]",
                 isActive ? "bg-[#3F4147] text-[#F2F3F5]" : (hasUnread ? "text-white font-bold" : "text-gray-400 hover:text-gray-200")
             )}
         >
-            <div className="flex items-center flex-1 min-w-0">
+            <button
+                onClick={onChannelClick}
+                className="absolute inset-0 w-full h-full rounded-md outline-none focus-visible:ring-2 focus-visible:ring-[#5865F2] cursor-pointer"
+                aria-label={name}
+            />
+            <div className="flex items-center flex-1 min-w-0 relative z-10 pointer-events-none">
                 <ChannelIcon type={type} isActive={isActive} hasUnread={hasUnread} isPrivate={isPrivate} />
                 <span className="truncate text-sm">{name}</span>
             </div>
 
-            <div className="flex items-center ml-2">
+            <div className="flex items-center ml-2 relative z-10 pointer-events-none">
                 <UserLimit type={type} userLimit={userLimit} present={present} />
-                <ChannelActions 
-                    type={type}
-                    onOpenChat={onOpenChat}
-                    onInviteToVoice={onInviteToVoice}
-                    onEditChannel={onEditChannel}
-                />
+                <div className="pointer-events-auto">
+                    <ChannelActions 
+                        type={type}
+                        onOpenChat={onOpenChat}
+                        onInviteToVoice={onInviteToVoice}
+                        onEditChannel={onEditChannel}
+                    />
+                </div>
             </div>
         </div>
     );
