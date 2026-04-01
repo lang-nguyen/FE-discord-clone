@@ -2,6 +2,7 @@ import { useMembers } from "@/features/servers/composables/members";
 import { TransferOwnershipDialog } from "./TransferOwnershipDialog";
 import { MembersHeader } from "./MembersHeader";
 import { MembersTable } from "./MembersTable";
+import { KickMemberDialog } from "./KickMemberDialog";
 
 export const ServerMembers = ({ serverName }) => {
   const membersLogic = useMembers({ serverName });
@@ -18,6 +19,7 @@ export const ServerMembers = ({ serverName }) => {
         searchQuery={membersLogic.searchQuery}
         onSearchChange={membersLogic.setSearchQuery}
         onTransferOwnership={membersLogic.openTransferDialog}
+        onKickMember={membersLogic.openKickDialog}
       />
 
       <TransferOwnershipDialog
@@ -33,6 +35,15 @@ export const ServerMembers = ({ serverName }) => {
         onVerificationCodeChange={membersLogic.setVerificationCode}
         onProceed={membersLogic.proceedToVerification}
         onConfirm={membersLogic.confirmTransfer}
+      />
+
+      <KickMemberDialog
+        open={membersLogic.kickDialogOpen}
+        onOpenChange={membersLogic.closeKickDialog}
+        member={membersLogic.kickTarget}
+        reason={membersLogic.kickReason}
+        onReasonChange={membersLogic.setKickReason}
+        onKick={membersLogic.confirmKick}
       />
     </div>
   );

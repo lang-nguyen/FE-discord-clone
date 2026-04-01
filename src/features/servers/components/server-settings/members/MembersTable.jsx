@@ -6,6 +6,7 @@ export const MembersTable = ({
   searchQuery,
   onSearchChange,
   onTransferOwnership,
+  onKickMember,
 }) => {
   return (
     <div className="bg-[#2b2d31] rounded-lg border border-[#3b3d44] overflow-hidden">
@@ -65,6 +66,7 @@ export const MembersTable = ({
             key={member.id} 
             member={member} 
             onTransferOwnership={onTransferOwnership} 
+            onKickMember={onKickMember}
           />
         ))}
 

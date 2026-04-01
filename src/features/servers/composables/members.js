@@ -45,6 +45,11 @@ export function useMembers({ serverName }) {
   const [transferTarget, setTransferTarget] = useState(null);
   const [transferAcknowledged, setTransferAcknowledged] = useState(false);
 
+  // Kick member state
+  const [kickDialogOpen, setKickDialogOpen] = useState(false);
+  const [kickTarget, setKickTarget] = useState(null);
+  const [kickReason, setKickReason] = useState("");
+
   // Verification code step
   const [verificationStep, setVerificationStep] = useState(false);
   const [verificationCode, setVerificationCode] = useState("");
@@ -92,6 +97,27 @@ export function useMembers({ serverName }) {
     closeTransferDialog();
   }, [verificationCode, transferTarget, closeTransferDialog]);
 
+  // Open kick dialog for a member
+  const openKickDialog = useCallback((member) => {
+    setKickTarget(member);
+    setKickReason("");
+    setKickDialogOpen(true);
+  }, []);
+
+  // Close kick dialog
+  const closeKickDialog = useCallback(() => {
+    setKickDialogOpen(false);
+    setKickTarget(null);
+    setKickReason("");
+  }, []);
+
+  // Confirm kick
+  const confirmKick = useCallback(async () => {
+    // TODO: Call API to kick member
+    console.log("Kicking member:", kickTarget?.username, "Reason:", kickReason);
+    closeKickDialog();
+  }, [kickTarget, kickReason, closeKickDialog]);
+
   return {
     members: filteredMembers,
     totalCount: members.length,
@@ -114,5 +140,14 @@ export function useMembers({ serverName }) {
     closeTransferDialog,
     proceedToVerification,
     confirmTransfer,
+
+    // Kick member
+    kickDialogOpen,
+    kickTarget,
+    kickReason,
+    setKickReason,
+    openKickDialog,
+    closeKickDialog,
+    confirmKick,
   };
 }
