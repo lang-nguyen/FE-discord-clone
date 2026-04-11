@@ -1,5 +1,6 @@
 import { ScrollArea } from "@/shared/components/ui/ScrollArea";
 import { MemberRow } from "./MemberRow";
+import { useEffect, useRef } from "react";
 
 export const MembersTable = ({
   members,
@@ -7,7 +8,26 @@ export const MembersTable = ({
   onSearchChange,
   onTransferOwnership,
   onBanMember,
+  isLoading,
+  hasMore,
+  fetchNextPage,
 }) => {
+  const observerRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !isLoading && !searchQuery) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (observerRef.current) observer.observe(observerRef.current);
+
+    return () => observer.disconnect();
+  }, [hasMore, isLoading, fetchNextPage, searchQuery]);
   return (
     <div className="bg-[#2b2d31] rounded-lg border border-[#3b3d44] overflow-hidden">
       {/* Toolbar */}
@@ -70,11 +90,26 @@ export const MembersTable = ({
           />
         ))}
 
-        {members.length === 0 && (
+        {members.length === 0 && !isLoading && (
           <div className="flex flex-col items-center justify-center py-20 px-4 text-center">
             <p className="text-[#80848e] text-[15px]">
               Before searching, we need to index this server. Give us a mo'.
             </p>
+          </div>
+        )}
+
+        {/* Intersection Observer Target */}
+        {!searchQuery && (
+          <div ref={observerRef} className="h-10 w-full flex items-center justify-center py-4">
+            {isLoading && (
+              <div className="flex items-center gap-2 text-gray-400">
+                <span className="w-4 h-4 rounded-full border-2 border-indigo-500 border-t-transparent animate-spin" />
+                <span className="text-sm">Loading more members...</span>
+              </div>
+            )}
+            {!hasMore && members.length > 0 && (
+              <span className="text-sm text-gray-500">End of member list.</span>
+            )}
           </div>
         )}
       </ScrollArea>

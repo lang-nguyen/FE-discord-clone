@@ -20,6 +20,9 @@ export const ServerMembers = ({ serverName }) => {
         onSearchChange={membersLogic.setSearchQuery}
         onTransferOwnership={membersLogic.openTransferDialog}
         onBanMember={membersLogic.openBanDialog}
+        isLoading={membersLogic.isLoading}
+        hasMore={membersLogic.hasMore}
+        fetchNextPage={membersLogic.fetchNextPage}
       />
 
       <TransferOwnershipDialog

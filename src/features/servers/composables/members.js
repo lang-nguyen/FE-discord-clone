@@ -1,29 +1,17 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 
-const MOCK_MEMBERS = [
-  {
-    id: "1",
-    name: "Dũng",
-    username: "dung8022",
-    avatarUrl: "",
-    memberSince: "1 min ago",
-    joinedDiscord: "3 years ago",
-    joinMethod: "GAAVrmDR",
-    roles: [],
-    signals: [],
-  },
-  {
-    id: "2",
-    name: "HIN",
-    username: "hpsd",
-    avatarUrl: "",
-    memberSince: "3 hrs ago",
-    joinedDiscord: "6 years ago",
-    joinMethod: "Unknown",
-    roles: [],
-    signals: [],
-  },
-];
+// Tạo Mock DB lớn hơn để test cuộn (Infinite Scroll)
+const MOCK_DB = Array.from({ length: 75 }).map((_, i) => ({
+  id: `${i + 1}`,
+  name: `Thành viên ${i + 1}`,
+  username: `user_${i + 1}`,
+  avatarUrl: "",
+  memberSince: `${(i % 5) + 1} days ago`,
+  joinedDiscord: `${(i % 3) + 1} years ago`,
+  joinMethod: i % 2 === 0 ? "Invite Link" : "Discovery",
+  roles: [],
+  signals: [],
+}));
 
 
 
@@ -35,10 +23,44 @@ const MOCK_MEMBERS = [
  * - Transfer ownership flow
  */
 export function useMembers({ serverName }) {
-  const [members] = useState(MOCK_MEMBERS);
+  // Trạng thái danh sách
+  const [members, setMembers] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(0);
+  const PAGE_SIZE = 20;
+
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedMember, setSelectedMember] = useState(null);
   const [showMembersInChannel, setShowMembersInChannel] = useState(false);
+
+  // Giả lập Initial Load
+  useEffect(() => {
+    setIsLoading(true);
+    setTimeout(() => {
+      setMembers(MOCK_DB.slice(0, PAGE_SIZE));
+      setIsLoading(false);
+    }, 600);
+  }, []);
+
+  // Giả lập Fetch tiếp theo trang
+  const fetchNextPage = useCallback(() => {
+    if (isLoading || !hasMore) return;
+    setIsLoading(true);
+    setTimeout(() => {
+      const nextPage = page + 1;
+      const nextBatch = MOCK_DB.slice(nextPage * PAGE_SIZE, (nextPage + 1) * PAGE_SIZE);
+      
+      if (nextBatch.length === 0) {
+        setHasMore(false);
+      } else {
+        setMembers(prev => [...prev, ...nextBatch]);
+        setPage(nextPage);
+        if (nextBatch.length < PAGE_SIZE) setHasMore(false);
+      }
+      setIsLoading(false);
+    }, 1000);
+  }, [isLoading, hasMore, page]);
 
   // Transfer ownership state
   const [transferDialogOpen, setTransferDialogOpen] = useState(false);
@@ -125,6 +147,11 @@ export function useMembers({ serverName }) {
     setSelectedMember,
     showMembersInChannel,
     setShowMembersInChannel,
+    
+    // Pagination
+    isLoading,
+    hasMore,
+    fetchNextPage,
 
     // Transfer ownership
     transferDialogOpen,
