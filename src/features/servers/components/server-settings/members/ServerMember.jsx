@@ -2,6 +2,7 @@ import { useMembers } from "@/features/servers/composables/members";
 import { TransferOwnershipDialog } from "./TransferOwnershipDialog";
 import { MembersHeader } from "./MembersHeader";
 import { MembersTable } from "./MembersTable";
+import { BanMemberDialog } from "./BanMemberDialog";
 
 export const ServerMembers = ({ serverName }) => {
   const membersLogic = useMembers({ serverName });
@@ -18,6 +19,7 @@ export const ServerMembers = ({ serverName }) => {
         searchQuery={membersLogic.searchQuery}
         onSearchChange={membersLogic.setSearchQuery}
         onTransferOwnership={membersLogic.openTransferDialog}
+        onBanMember={membersLogic.openBanDialog}
       />
 
       <TransferOwnershipDialog
@@ -33,6 +35,13 @@ export const ServerMembers = ({ serverName }) => {
         onVerificationCodeChange={membersLogic.setVerificationCode}
         onProceed={membersLogic.proceedToVerification}
         onConfirm={membersLogic.confirmTransfer}
+      />
+
+      <BanMemberDialog
+        open={membersLogic.banDialogOpen}
+        onOpenChange={membersLogic.closeBanDialog}
+        targetMember={membersLogic.banTarget}
+        onConfirm={membersLogic.confirmBan}
       />
     </div>
   );

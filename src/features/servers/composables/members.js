@@ -45,6 +45,10 @@ export function useMembers({ serverName }) {
   const [transferTarget, setTransferTarget] = useState(null);
   const [transferAcknowledged, setTransferAcknowledged] = useState(false);
 
+  // Ban member state
+  const [banDialogOpen, setBanDialogOpen] = useState(false);
+  const [banTarget, setBanTarget] = useState(null);
+
   // Verification code step
   const [verificationStep, setVerificationStep] = useState(false);
   const [verificationCode, setVerificationCode] = useState("");
@@ -92,6 +96,26 @@ export function useMembers({ serverName }) {
     closeTransferDialog();
   }, [verificationCode, transferTarget, closeTransferDialog]);
 
+  // Open ban dialog
+  const openBanDialog = useCallback((member) => {
+    setBanTarget(member);
+    setBanDialogOpen(true);
+  }, []);
+
+  // Close ban dialog
+  const closeBanDialog = useCallback(() => {
+    setBanDialogOpen(false);
+    setBanTarget(null);
+  }, []);
+
+  // Confirm ban
+  const confirmBan = useCallback(async (reason, deleteHistory) => {
+    if (!banTarget) return;
+    // TODO: Call API to ban member
+    console.log("Banning:", banTarget.username, "Reason:", reason, "Delete history (hours):", deleteHistory);
+    closeBanDialog();
+  }, [banTarget, closeBanDialog]);
+
   return {
     members: filteredMembers,
     totalCount: members.length,
@@ -114,5 +138,12 @@ export function useMembers({ serverName }) {
     closeTransferDialog,
     proceedToVerification,
     confirmTransfer,
+
+    // Ban member
+    banDialogOpen,
+    banTarget,
+    openBanDialog,
+    closeBanDialog,
+    confirmBan,
   };
 }

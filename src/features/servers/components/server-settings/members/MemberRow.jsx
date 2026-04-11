@@ -1,7 +1,7 @@
 import { MemberContextMenu } from "./MemberContextMenu";
 import { MemberAvatar } from "./MemberAvatar";
 
-export const MemberRow = ({ member, onTransferOwnership }) => {
+export const MemberRow = ({ member, onTransferOwnership, onBanMember }) => {
   return (
     <div className="grid grid-cols-[auto_1fr_120px_120px_120px_100px_100px_auto] items-center px-4 py-3 border-b border-[#3b3d44]/50 hover:bg-[#35373c] group transition-colors">
       {/* Checkbox */}
@@ -50,7 +50,7 @@ export const MemberRow = ({ member, onTransferOwnership }) => {
 
       {/* Actions */}
       <div className="flex items-center justify-end w-8">
-        <MemberContextMenu member={member} onTransferOwnership={onTransferOwnership}>
+        <MemberContextMenu member={member} onTransferOwnership={onTransferOwnership} onBanMember={onBanMember}>
           <button className="w-8 h-8 rounded-full hover:bg-[#404249] flex items-center justify-center text-gray-400 hover:text-white transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100">
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 16a2 2 0 100 4 2 2 0 000-4zm0-6a2 2 0 100 4 2 2 0 000-4zm0-6a2 2 0 100 4 2 2 0 000-4z" />
