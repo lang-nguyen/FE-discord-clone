@@ -3,9 +3,12 @@ import { TransferOwnershipDialog } from "./TransferOwnershipDialog";
 import { MembersHeader } from "./MembersHeader";
 import { MembersTable } from "./MembersTable";
 import { BanMemberDialog } from "./BanMemberDialog";
+import { PruneMembersDialog } from "./PruneMembersDialog";
+import { useRoles } from "@/features/servers/composables/roles";
 
 export const ServerMembers = ({ serverName }) => {
   const membersLogic = useMembers({ serverName });
+  const { roles } = useRoles();
 
   return (
     <div className="flex-1 min-w-0">
@@ -18,6 +21,9 @@ export const ServerMembers = ({ serverName }) => {
         members={membersLogic.members}
         searchQuery={membersLogic.searchQuery}
         onSearchChange={membersLogic.setSearchQuery}
+        sortOption={membersLogic.sortOption}
+        onSortChange={membersLogic.setSortOption}
+        onPruneClick={membersLogic.openPruneDialog}
         onTransferOwnership={membersLogic.openTransferDialog}
         onBanMember={membersLogic.openBanDialog}
         isLoading={membersLogic.isLoading}
@@ -45,6 +51,15 @@ export const ServerMembers = ({ serverName }) => {
         onOpenChange={membersLogic.closeBanDialog}
         targetMember={membersLogic.banTarget}
         onConfirm={membersLogic.confirmBan}
+      />
+
+      <PruneMembersDialog
+        open={membersLogic.pruneDialogOpen}
+        onOpenChange={membersLogic.closePruneDialog}
+        serverName={serverName}
+        onConfirm={membersLogic.confirmPrune}
+        members={membersLogic.members}
+        roles={roles}
       />
     </div>
   );

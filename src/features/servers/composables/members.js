@@ -1,17 +1,42 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
 
 // Tạo Mock DB lớn hơn để test cuộn (Infinite Scroll)
-const MOCK_DB = Array.from({ length: 75 }).map((_, i) => ({
-  id: `${i + 1}`,
-  name: `Thành viên ${i + 1}`,
-  username: `user_${i + 1}`,
-  avatarUrl: "",
-  memberSince: `${(i % 5) + 1} days ago`,
-  joinedDiscord: `${(i % 3) + 1} years ago`,
-  joinMethod: i % 2 === 0 ? "Invite Link" : "Discovery",
-  roles: [],
-  signals: [],
-}));
+const MOCK_DB = Array.from({ length: 75 }).map((_, i) => {
+  const memberTs = Date.now() - (i * 86400000 * 5); // Mỗi user chênh nhau 5 ngày vào Server
+  const discordTs = Date.now() - (i * 86400000 * 35); // Mỗi user chênh nhau 35 ngày chơi Discord
+  const lastSeenTs = Date.now() - ((i % 40) * 86400000); // offline từ 0 đến 39 ngày
+  
+  const daysSinceDiscord = Math.floor((Date.now() - discordTs) / 86400000);
+  const joinedDiscordStr = daysSinceDiscord >= 365 
+    ? `${Math.floor(daysSinceDiscord / 365)} years ago` 
+    : `${Math.floor(daysSinceDiscord / 30)} months ago`;
+
+  const daysSinceMember = Math.floor((Date.now() - memberTs) / 86400000);
+  const joinedMemberStr = daysSinceMember >= 30
+    ? `${Math.floor(daysSinceMember / 30)} months ago`
+    : `${daysSinceMember} days ago`;
+
+  // Phân bổ role ảo để test Prune
+  let mockRoles = [];
+  if (i % 3 === 0) mockRoles = []; // Không có role (đối tượng yếu vị dễ bị prune nhất)
+  else if (i % 3 === 1) mockRoles = ["role-1"];
+  else mockRoles = ["role-1", "role-2"];
+
+  return {
+    id: `${i + 1}`,
+    name: `Thành viên ${i + 1}`,
+    username: `user_${i + 1}`,
+    avatarUrl: "",
+    memberSinceTs: memberTs,
+    joinedDiscordTs: discordTs,
+    lastSeenTs: lastSeenTs,
+    memberSince: joinedMemberStr,
+    joinedDiscord: joinedDiscordStr,
+    joinMethod: i % 2 === 0 ? "Invite Link" : "Discovery",
+    roles: mockRoles,
+    signals: [],
+  };
+});
 
 
 
@@ -33,6 +58,12 @@ export function useMembers({ serverName }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedMember, setSelectedMember] = useState(null);
   const [showMembersInChannel, setShowMembersInChannel] = useState(false);
+  
+  // Sort State
+  const [sortOption, setSortOption] = useState("member_since_new");
+
+  // Prune State
+  const [pruneDialogOpen, setPruneDialogOpen] = useState(false);
 
   // Giả lập Initial Load
   useEffect(() => {
@@ -75,16 +106,38 @@ export function useMembers({ serverName }) {
   const [verificationStep, setVerificationStep] = useState(false);
   const [verificationCode, setVerificationCode] = useState("");
 
-  // Filter members by search
-  const filteredMembers = useMemo(() => {
-    if (!searchQuery) return members;
-    const q = searchQuery.toLowerCase();
-    return members.filter(
-      (m) =>
-        m.name.toLowerCase().includes(q) ||
-        m.username.toLowerCase().includes(q)
-    );
-  }, [members, searchQuery]);
+  // Filter & Sort members
+  const filteredAndSortedMembers = useMemo(() => {
+    let result = members;
+    
+    // 1. Lọc theo tìm kiếm
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(
+        (m) =>
+          m.name.toLowerCase().includes(q) ||
+          m.username.toLowerCase().includes(q)
+      );
+    }
+
+    // 2. Sắp xếp theo lựa chọn
+    result = [...result].sort((a, b) => {
+      switch (sortOption) {
+        case "member_since_new":
+          return b.memberSinceTs - a.memberSinceTs;
+        case "member_since_old":
+          return a.memberSinceTs - b.memberSinceTs;
+        case "joined_discord_new":
+          return b.joinedDiscordTs - a.joinedDiscordTs;
+        case "joined_discord_old":
+          return a.joinedDiscordTs - b.joinedDiscordTs;
+        default:
+          return 0;
+      }
+    });
+
+    return result;
+  }, [members, searchQuery, sortOption]);
 
   // Open transfer ownership dialog for a member
   const openTransferDialog = useCallback((member) => {
@@ -133,13 +186,34 @@ export function useMembers({ serverName }) {
   // Confirm ban
   const confirmBan = useCallback(async (reason, deleteHistory) => {
     if (!banTarget) return;
-    // TODO: Call API to ban member
+    setMembers(prev => prev.filter(m => m.id !== banTarget.id));
     console.log("Banning:", banTarget.username, "Reason:", reason, "Delete history (hours):", deleteHistory);
     closeBanDialog();
   }, [banTarget, closeBanDialog]);
 
+  // Handle Prune
+  const confirmPrune = useCallback((days, roleId) => {
+    const cutoffTs = Date.now() - (parseInt(days) * 86400000);
+    setMembers(prev => {
+      return prev.filter(m => {
+        // 1. Còn hoạt động gần đây -> An toàn (Giữ lại)
+        if (m.lastSeenTs >= cutoffTs) return true;
+        
+        // 2. Không hoạt động ngần ấy ngày -> Khoanh vùng chờ duyệt
+        const hasNoRoles = m.roles.length === 0;
+        const hasSelectedRole = roleId ? m.roles.includes(roleId) : false;
+        
+        // Nếu không có role hoặc cầm đúng cái Role bị chọn -> Khai tử
+        const isPruned = hasNoRoles || hasSelectedRole;
+        
+        return !isPruned; // true = Sống, false = Chết
+      });
+    });
+    setPruneDialogOpen(false);
+  }, []);
+
   return {
-    members: filteredMembers,
+    members: filteredAndSortedMembers,
     totalCount: members.length,
     searchQuery,
     setSearchQuery,
@@ -147,6 +221,16 @@ export function useMembers({ serverName }) {
     setSelectedMember,
     showMembersInChannel,
     setShowMembersInChannel,
+    
+    // Sort
+    sortOption,
+    setSortOption,
+    
+    // Prune
+    pruneDialogOpen,
+    openPruneDialog: () => setPruneDialogOpen(true),
+    closePruneDialog: () => setPruneDialogOpen(false),
+    confirmPrune,
     
     // Pagination
     isLoading,
