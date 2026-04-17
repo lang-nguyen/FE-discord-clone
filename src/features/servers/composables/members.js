@@ -191,6 +191,31 @@ export function useMembers({ serverName }) {
     closeBanDialog();
   }, [banTarget, closeBanDialog]);
 
+  // Change Nickname state
+  const [changeNicknameDialogOpen, setChangeNicknameDialogOpen] = useState(false);
+  const [changeNicknameTarget, setChangeNicknameTarget] = useState(null);
+
+  const openChangeNicknameDialog = useCallback((member) => {
+    setChangeNicknameTarget(member);
+    setChangeNicknameDialogOpen(true);
+  }, []);
+
+  const closeChangeNicknameDialog = useCallback(() => {
+    setChangeNicknameDialogOpen(false);
+    setChangeNicknameTarget(null);
+  }, []);
+
+  const confirmChangeNickname = useCallback((newNickname) => {
+    if (!changeNicknameTarget) return;
+    setMembers(prev => prev.map(m => {
+      if (m.id === changeNicknameTarget.id) {
+        return { ...m, name: newNickname || m.name };
+      }
+      return m;
+    }));
+    closeChangeNicknameDialog();
+  }, [changeNicknameTarget, closeChangeNicknameDialog]);
+
   // Handle Prune
   const confirmPrune = useCallback((days, roleId) => {
     const cutoffTs = Date.now() - (parseInt(days) * 86400000);
@@ -256,5 +281,12 @@ export function useMembers({ serverName }) {
     openBanDialog,
     closeBanDialog,
     confirmBan,
+
+    // Change Nickname
+    changeNicknameDialogOpen,
+    changeNicknameTarget,
+    openChangeNicknameDialog,
+    closeChangeNicknameDialog,
+    confirmChangeNickname,
   };
 }

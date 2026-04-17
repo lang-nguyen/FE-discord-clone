@@ -11,6 +11,7 @@ export const MembersTable = ({
   onPruneClick,
   onTransferOwnership,
   onBanMember,
+  onChangeNickname,
   isLoading,
   hasMore,
   fetchNextPage,
@@ -125,6 +126,7 @@ export const MembersTable = ({
             member={member} 
             onTransferOwnership={onTransferOwnership} 
             onBanMember={onBanMember}
+            onChangeNickname={onChangeNickname}
           />
         ))}
 

@@ -6,7 +6,7 @@ import {
   DropdownMenuSeparator,
 } from "@/shared/components/ui/Dropdown";
 
-export const MemberContextMenu = ({ member, onTransferOwnership, onBanMember, children }) => {
+export const MemberContextMenu = ({ member, onTransferOwnership, onBanMember, onChangeNickname, children }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -18,7 +18,7 @@ export const MemberContextMenu = ({ member, onTransferOwnership, onBanMember, ch
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem>Change Nickname</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => onChangeNickname(member)}>Change Nickname</DropdownMenuItem>
         <DropdownMenuItem>Ignore</DropdownMenuItem>
         <DropdownMenuItem className="text-red-400 focus:text-red-300">
           Block
