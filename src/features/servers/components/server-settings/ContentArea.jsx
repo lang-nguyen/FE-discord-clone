@@ -1,9 +1,11 @@
 import { ServerProfile } from "./profile/ServerProfile";
 import { ServerMembers } from "./members/ServerMember";
+import { ServerRoles } from "./roles/ServerRoles";
 
 const TAB_COMPONENTS = {
   "server-profile": ServerProfile,
   "members": ServerMembers,
+  "roles": ServerRoles,
 };
 
 export const ContentArea = ({ activeTab, profileData, onUpdateField }) => {
