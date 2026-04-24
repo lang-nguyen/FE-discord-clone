@@ -1,3 +1,4 @@
+
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthLayout } from './layouts/AuthLayout';
 import { LoginPage } from './features/auth/pages/LoginPage';
@@ -34,6 +35,13 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/" element={<MainLayout />}>
+          {/* Main Content Routes will go here eventually */}
+          <Route index element={
+            <div className="flex h-full items-center justify-center text-gray-400">
+              Main content goes here
+            </div>
+          } />
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
