@@ -12,6 +12,7 @@ export const MembersTable = ({
   onTransferOwnership,
   onBanMember,
   onChangeNickname,
+  onBlockMember,
   isLoading,
   hasMore,
   fetchNextPage,
@@ -127,6 +128,7 @@ export const MembersTable = ({
             onTransferOwnership={onTransferOwnership} 
             onBanMember={onBanMember}
             onChangeNickname={onChangeNickname}
+            onBlockMember={onBlockMember}
           />
         ))}
 

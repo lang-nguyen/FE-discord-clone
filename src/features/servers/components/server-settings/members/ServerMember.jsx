@@ -5,6 +5,7 @@ import { MembersTable } from "./MembersTable";
 import { BanMemberDialog } from "./BanMemberDialog";
 import { PruneMembersDialog } from "./PruneMembersDialog";
 import { ChangeNicknameDialog } from "./ChangeNicknameDialog";
+import { BlockMemberDialog } from "./BlockMemberDialog";
 import { useRoles } from "@/features/servers/composables/roles";
 
 export const ServerMembers = ({ serverName }) => {
@@ -28,6 +29,7 @@ export const ServerMembers = ({ serverName }) => {
         onTransferOwnership={membersLogic.openTransferDialog}
         onBanMember={membersLogic.openBanDialog}
         onChangeNickname={membersLogic.openChangeNicknameDialog}
+        onBlockMember={membersLogic.openBlockDialog}
         isLoading={membersLogic.isLoading}
         hasMore={membersLogic.hasMore}
         fetchNextPage={membersLogic.fetchNextPage}
@@ -69,6 +71,13 @@ export const ServerMembers = ({ serverName }) => {
         onOpenChange={membersLogic.closeChangeNicknameDialog}
         member={membersLogic.changeNicknameTarget}
         onConfirm={membersLogic.confirmChangeNickname}
+      />
+
+      <BlockMemberDialog
+        open={membersLogic.blockDialogOpen}
+        onOpenChange={membersLogic.closeBlockDialog}
+        targetMember={membersLogic.blockTarget}
+        onConfirm={membersLogic.confirmBlock}
       />
     </div>
   );

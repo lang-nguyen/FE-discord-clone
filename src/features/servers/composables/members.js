@@ -216,6 +216,28 @@ export function useMembers({ serverName }) {
     closeChangeNicknameDialog();
   }, [changeNicknameTarget, closeChangeNicknameDialog]);
 
+  // Block Member state
+  const [blockDialogOpen, setBlockDialogOpen] = useState(false);
+  const [blockTarget, setBlockTarget] = useState(null);
+
+  const openBlockDialog = useCallback((member) => {
+    setBlockTarget(member);
+    setBlockDialogOpen(true);
+  }, []);
+
+  const closeBlockDialog = useCallback(() => {
+    setBlockDialogOpen(false);
+    setBlockTarget(null);
+  }, []);
+
+  const confirmBlock = useCallback(() => {
+    if (!blockTarget) return;
+    // Xóa user khỏi danh sách giống như ban (hoặc đánh dấu block)
+    setMembers(prev => prev.filter(m => m.id !== blockTarget.id));
+    console.log("Blocked:", blockTarget.username);
+    closeBlockDialog();
+  }, [blockTarget, closeBlockDialog]);
+
   // Handle Prune
   const confirmPrune = useCallback((days, roleId) => {
     const cutoffTs = Date.now() - (parseInt(days) * 86400000);
@@ -288,5 +310,12 @@ export function useMembers({ serverName }) {
     openChangeNicknameDialog,
     closeChangeNicknameDialog,
     confirmChangeNickname,
+
+    // Block Member
+    blockDialogOpen,
+    blockTarget,
+    openBlockDialog,
+    closeBlockDialog,
+    confirmBlock,
   };
 }
