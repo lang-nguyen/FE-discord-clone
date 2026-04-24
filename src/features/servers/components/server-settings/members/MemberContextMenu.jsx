@@ -6,7 +6,16 @@ import {
   DropdownMenuSeparator,
 } from "@/shared/components/ui/Dropdown";
 
-export const MemberContextMenu = ({ member, onTransferOwnership, onBanMember, onChangeNickname, onBlockMember, children }) => {
+export const MemberContextMenu = ({
+  member,
+  onTransferOwnership,
+  onBanMember,
+  onChangeNickname,
+  onBlockMember,
+  onTimeoutMember,
+  onKickMember,
+  children
+}) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -26,10 +35,10 @@ export const MemberContextMenu = ({ member, onTransferOwnership, onBanMember, on
         <DropdownMenuSeparator />
 
         <DropdownMenuItem>Open in Mod View</DropdownMenuItem>
-        <DropdownMenuItem className="text-red-400 focus:text-red-300">
-          Timeout {member.username}
+        <DropdownMenuItem className="text-red-400 focus:text-red-300" onClick={() => onTimeoutMember(member)}>
+          {member.isTimeout ? `Remove Timeout for ${member.username}` : `Timeout ${member.username}`}
         </DropdownMenuItem>
-        <DropdownMenuItem className="text-red-400 focus:text-red-300">
+        <DropdownMenuItem className="text-red-400 focus:text-red-300" onClick={() => onKickMember(member)}>
           Kick {member.username}
         </DropdownMenuItem>
         <DropdownMenuItem className="text-red-400 focus:text-red-300" onClick={() => onBanMember(member)}>

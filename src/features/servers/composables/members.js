@@ -1,321 +1,186 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
 
-// Tạo Mock DB lớn hơn để test cuộn (Infinite Scroll)
-const MOCK_DB = Array.from({ length: 75 }).map((_, i) => {
-  const memberTs = Date.now() - (i * 86400000 * 5); // Mỗi user chênh nhau 5 ngày vào Server
-  const discordTs = Date.now() - (i * 86400000 * 35); // Mỗi user chênh nhau 35 ngày chơi Discord
-  const lastSeenTs = Date.now() - ((i % 40) * 86400000); // offline từ 0 đến 39 ngày
-  
-  const daysSinceDiscord = Math.floor((Date.now() - discordTs) / 86400000);
-  const joinedDiscordStr = daysSinceDiscord >= 365 
-    ? `${Math.floor(daysSinceDiscord / 365)} years ago` 
-    : `${Math.floor(daysSinceDiscord / 30)} months ago`;
+const INITIAL_MEMBERS = [
+  { id: "1", username: "thien", name: "thien", memberSince: "Aug 10, 2023", joinedDiscord: "May 5, 2020", joinMethod: "Invite", roles: ["role-1"], lastSeenTs: Date.now() - (40 * 86400000), isTimeout: false, timeoutUntil: null },
+  { id: "2", username: "nieahh_04", name: "nieahh_04", memberSince: "Jan 15, 2024", joinedDiscord: "Dec 12, 2021", joinMethod: "Invite", roles: ["role-2"], lastSeenTs: Date.now() - (20 * 86400000), isTimeout: false, timeoutUntil: null },
+];
 
-  const daysSinceMember = Math.floor((Date.now() - memberTs) / 86400000);
-  const joinedMemberStr = daysSinceMember >= 30
-    ? `${Math.floor(daysSinceMember / 30)} months ago`
-    : `${daysSinceMember} days ago`;
+// Sinh thêm data giả lập
+for (let i = 3; i <= 50; i++) {
+  INITIAL_MEMBERS.push({
+    id: i.toString(),
+    username: `user_${i}`,
+    name: `User ${i}`,
+    memberSince: "Feb 1, 2024",
+    joinedDiscord: "Jan 1, 2022",
+    joinMethod: "Invite",
+    roles: [],
+    lastSeenTs: Date.now() - (i * 100000000),
+    isTimeout: false,
+    timeoutUntil: null
+  });
+}
 
-  // Phân bổ role ảo để test Prune
-  let mockRoles = [];
-  if (i % 3 === 0) mockRoles = []; // Không có role (đối tượng yếu vị dễ bị prune nhất)
-  else if (i % 3 === 1) mockRoles = ["role-1"];
-  else mockRoles = ["role-1", "role-2"];
-
-  return {
-    id: `${i + 1}`,
-    name: `Thành viên ${i + 1}`,
-    username: `user_${i + 1}`,
-    avatarUrl: "",
-    memberSinceTs: memberTs,
-    joinedDiscordTs: discordTs,
-    lastSeenTs: lastSeenTs,
-    memberSince: joinedMemberStr,
-    joinedDiscord: joinedDiscordStr,
-    joinMethod: i % 2 === 0 ? "Invite Link" : "Discovery",
-    roles: mockRoles,
-    signals: [],
-  };
-});
-
-
-
-/**
- * Composable quản lý members:
- * - Danh sách members
- * - Tìm kiếm
- * - Chọn member (context menu)
- * - Transfer ownership flow
- */
 export function useMembers({ serverName }) {
-  // Trạng thái danh sách
-  const [members, setMembers] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
-  const [page, setPage] = useState(0);
-  const PAGE_SIZE = 20;
-
+  console.log("useMembers hook initialized");
+  const [members, setMembers] = useState(INITIAL_MEMBERS);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedMember, setSelectedMember] = useState(null);
+  const [sortMode, setSortMode] = useState("member-newest");
   const [showMembersInChannel, setShowMembersInChannel] = useState(false);
-  
-  // Sort State
-  const [sortOption, setSortOption] = useState("member_since_new");
+  const [isLoading, setIsLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
 
-  // Prune State
+  // Dialog states
+  const [transferDialogOpen, setTransferDialogOpen] = useState(false);
+  const [transferTarget, setTransferTarget] = useState(null);
+  const [transferAcknowledged, setTransferAcknowledged] = useState(false);
+  const [verificationStep, setVerificationStep] = useState(false);
+  const [verificationCode, setVerificationCode] = useState("");
+  const [banDialogOpen, setBanDialogOpen] = useState(false);
+  const [banTarget, setBanTarget] = useState(null);
+  const [changeNicknameDialogOpen, setChangeNicknameDialogOpen] = useState(false);
+  const [changeNicknameTarget, setChangeNicknameTarget] = useState(null);
+  const [blockDialogOpen, setBlockDialogOpen] = useState(false);
+  const [blockTarget, setBlockTarget] = useState(null);
+  const [timeoutDialogOpen, setTimeoutDialogOpen] = useState(false);
+  const [timeoutTarget, setTimeoutTarget] = useState(null);
+  const [kickDialogOpen, setKickDialogOpen] = useState(false);
+  const [kickTarget, setKickTarget] = useState(null);
   const [pruneDialogOpen, setPruneDialogOpen] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
 
-  // Giả lập Initial Load
-  useEffect(() => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setMembers(MOCK_DB.slice(0, PAGE_SIZE));
-      setIsLoading(false);
-    }, 600);
+  // Filter & Sort members
+  const filteredAndSortedMembers = useMemo(() => {
+    let result = [...members];
+    
+    // Sort logic
+    result.sort((a, b) => {
+      if (sortMode === "member-newest") return parseInt(b.id) - parseInt(a.id);
+      if (sortMode === "member-oldest") return parseInt(a.id) - parseInt(b.id);
+      
+      // Giả lập join discord dựa trên timestamp ảo (lastSeenTs hoặc join date)
+      // Trong thực tế sẽ so sánh timestamp của joinedDiscord
+      if (sortMode === "discord-newest") return b.lastSeenTs - a.lastSeenTs;
+      if (sortMode === "discord-oldest") return a.lastSeenTs - b.lastSeenTs;
+      
+      return 0;
+    });
+
+    if (searchQuery) {
+      result = result.filter(m => 
+        (m.username || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (m.name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (m.id || "").includes(searchQuery)
+      );
+    }
+    return result.slice(0, page * 20);
+  }, [members, searchQuery, page, sortMode]);
+
+  const changeSortMode = useCallback((mode) => {
+    setSortMode(mode);
   }, []);
 
-  // Giả lập Fetch tiếp theo trang
   const fetchNextPage = useCallback(() => {
     if (isLoading || !hasMore) return;
     setIsLoading(true);
     setTimeout(() => {
-      const nextPage = page + 1;
-      const nextBatch = MOCK_DB.slice(nextPage * PAGE_SIZE, (nextPage + 1) * PAGE_SIZE);
-      
-      if (nextBatch.length === 0) {
-        setHasMore(false);
-      } else {
-        setMembers(prev => [...prev, ...nextBatch]);
-        setPage(nextPage);
-        if (nextBatch.length < PAGE_SIZE) setHasMore(false);
-      }
+      setPage(prev => prev + 1);
+      if (page * 20 >= members.length) setHasMore(false);
       setIsLoading(false);
-    }, 1000);
-  }, [isLoading, hasMore, page]);
+    }, 500);
+  }, [isLoading, hasMore, page, members.length]);
 
-  // Transfer ownership state
-  const [transferDialogOpen, setTransferDialogOpen] = useState(false);
-  const [transferTarget, setTransferTarget] = useState(null);
-  const [transferAcknowledged, setTransferAcknowledged] = useState(false);
-
-  // Ban member state
-  const [banDialogOpen, setBanDialogOpen] = useState(false);
-  const [banTarget, setBanTarget] = useState(null);
-
-  // Verification code step
-  const [verificationStep, setVerificationStep] = useState(false);
-  const [verificationCode, setVerificationCode] = useState("");
-
-  // Filter & Sort members
-  const filteredAndSortedMembers = useMemo(() => {
-    let result = members;
-    
-    // 1. Lọc theo tìm kiếm
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase();
-      result = result.filter(
-        (m) =>
-          m.name.toLowerCase().includes(q) ||
-          m.username.toLowerCase().includes(q)
-      );
-    }
-
-    // 2. Sắp xếp theo lựa chọn
-    result = [...result].sort((a, b) => {
-      switch (sortOption) {
-        case "member_since_new":
-          return b.memberSinceTs - a.memberSinceTs;
-        case "member_since_old":
-          return a.memberSinceTs - b.memberSinceTs;
-        case "joined_discord_new":
-          return b.joinedDiscordTs - a.joinedDiscordTs;
-        case "joined_discord_old":
-          return a.joinedDiscordTs - b.joinedDiscordTs;
-        default:
-          return 0;
-      }
-    });
-
-    return result;
-  }, [members, searchQuery, sortOption]);
-
-  // Open transfer ownership dialog for a member
-  const openTransferDialog = useCallback((member) => {
-    setTransferTarget(member);
-    setTransferAcknowledged(false);
-    setVerificationStep(false);
-    setVerificationCode("");
-    setTransferDialogOpen(true);
+  const showToast = useCallback((msg) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(""), 3000);
   }, []);
 
-  // Close transfer dialog
-  const closeTransferDialog = useCallback(() => {
-    setTransferDialogOpen(false);
-    setTransferTarget(null);
-    setTransferAcknowledged(false);
-    setVerificationStep(false);
-    setVerificationCode("");
-  }, []);
+  // Handlers
+  const openTransferDialog = useCallback((m) => { setTransferTarget(m); setTransferDialogOpen(true); }, []);
+  const closeTransferDialog = useCallback(() => { setTransferDialogOpen(false); setTransferTarget(null); }, []);
+  const proceedToVerification = useCallback(() => setVerificationStep(true), []);
+  const confirmTransfer = useCallback(() => { showToast("Ownership transferred"); closeTransferDialog(); }, [showToast, closeTransferDialog]);
 
-  // Proceed to verification step
-  const proceedToVerification = useCallback(() => {
-    if (!transferAcknowledged) return;
-    setVerificationStep(true);
-  }, [transferAcknowledged]);
+  const openBanDialog = useCallback((m) => { setBanTarget(m); setBanDialogOpen(true); }, []);
+  const closeBanDialog = useCallback(() => { setBanDialogOpen(false); setBanTarget(null); }, []);
+  const confirmBan = useCallback(() => { setMembers(prev => prev.filter(m => m.id !== banTarget?.id)); showToast("Member banned"); closeBanDialog(); }, [banTarget, closeBanDialog, showToast]);
 
-  // Confirm transfer
-  const confirmTransfer = useCallback(async () => {
-    if (!verificationCode) return;
-    // TODO: Call API to transfer ownership
-    console.log("Transfer ownership to:", transferTarget?.username, "Code:", verificationCode);
-    closeTransferDialog();
-  }, [verificationCode, transferTarget, closeTransferDialog]);
+  const openChangeNicknameDialog = useCallback((m) => { setChangeNicknameTarget(m); setChangeNicknameDialogOpen(true); }, []);
+  const closeChangeNicknameDialog = useCallback(() => { setChangeNicknameDialogOpen(false); setChangeNicknameTarget(null); }, []);
+  const confirmChangeNickname = useCallback((nick) => { setMembers(prev => prev.map(m => m.id === changeNicknameTarget?.id ? { ...m, name: nick || m.name } : m)); showToast("Nickname changed"); closeChangeNicknameDialog(); }, [changeNicknameTarget, closeChangeNicknameDialog, showToast]);
 
-  // Open ban dialog
-  const openBanDialog = useCallback((member) => {
-    setBanTarget(member);
-    setBanDialogOpen(true);
-  }, []);
+  const openBlockDialog = useCallback((m) => { setBlockTarget(m); setBlockDialogOpen(true); }, []);
+  const closeBlockDialog = useCallback(() => { setBlockDialogOpen(false); setBlockTarget(null); }, []);
+  const confirmBlock = useCallback(() => { setMembers(prev => prev.filter(m => m.id !== blockTarget?.id)); showToast("Member blocked"); closeBlockDialog(); }, [blockTarget, closeBlockDialog, showToast]);
 
-  // Close ban dialog
-  const closeBanDialog = useCallback(() => {
-    setBanDialogOpen(false);
-    setBanTarget(null);
-  }, []);
+  const openTimeoutDialog = useCallback((m) => { setTimeoutTarget(m); setTimeoutDialogOpen(true); }, []);
+  const closeTimeoutDialog = useCallback(() => { setTimeoutDialogOpen(false); setTimeoutTarget(null); }, []);
+  const confirmTimeout = useCallback((dur, reason) => {
+    if (!timeoutTarget) return;
+    const isRemoving = timeoutTarget.isTimeout;
+    let ms = 0;
+    if (dur === "60s") ms = 60000;
+    else if (dur === "5m") ms = 300000;
+    else if (dur === "10m") ms = 600000;
+    else if (dur === "1h") ms = 3600000;
+    else if (dur === "1d") ms = 86400000;
+    else if (dur === "1w") ms = 604800000;
+    const until = isRemoving ? null : Date.now() + ms;
+    setMembers(prev => prev.map(m => m.id === timeoutTarget.id ? { ...m, isTimeout: !m.isTimeout, timeoutUntil: until } : m));
+    showToast(isRemoving ? "Timeout removed" : "Member timed out");
+    closeTimeoutDialog();
+  }, [timeoutTarget, closeTimeoutDialog, showToast]);
 
-  // Confirm ban
-  const confirmBan = useCallback(async (reason, deleteHistory) => {
-    if (!banTarget) return;
-    setMembers(prev => prev.filter(m => m.id !== banTarget.id));
-    console.log("Banning:", banTarget.username, "Reason:", reason, "Delete history (hours):", deleteHistory);
-    closeBanDialog();
-  }, [banTarget, closeBanDialog]);
+  const openKickDialog = useCallback((m) => { setKickTarget(m); setKickDialogOpen(true); }, []);
+  const closeKickDialog = useCallback(() => { setKickDialogOpen(false); setKickTarget(null); }, []);
+  const confirmKick = useCallback(() => { setMembers(prev => prev.filter(m => m.id !== kickTarget?.id)); showToast("Member kicked"); closeKickDialog(); }, [kickTarget, closeKickDialog, showToast]);
 
-  // Change Nickname state
-  const [changeNicknameDialogOpen, setChangeNicknameDialogOpen] = useState(false);
-  const [changeNicknameTarget, setChangeNicknameTarget] = useState(null);
+  const openPruneDialog = useCallback(() => setPruneDialogOpen(true), []);
+  const closePruneDialog = useCallback(() => setPruneDialogOpen(false), []);
 
-  const openChangeNicknameDialog = useCallback((member) => {
-    setChangeNicknameTarget(member);
-    setChangeNicknameDialogOpen(true);
-  }, []);
-
-  const closeChangeNicknameDialog = useCallback(() => {
-    setChangeNicknameDialogOpen(false);
-    setChangeNicknameTarget(null);
-  }, []);
-
-  const confirmChangeNickname = useCallback((newNickname) => {
-    if (!changeNicknameTarget) return;
-    setMembers(prev => prev.map(m => {
-      if (m.id === changeNicknameTarget.id) {
-        return { ...m, name: newNickname || m.name };
-      }
-      return m;
-    }));
-    closeChangeNicknameDialog();
-  }, [changeNicknameTarget, closeChangeNicknameDialog]);
-
-  // Block Member state
-  const [blockDialogOpen, setBlockDialogOpen] = useState(false);
-  const [blockTarget, setBlockTarget] = useState(null);
-
-  const openBlockDialog = useCallback((member) => {
-    setBlockTarget(member);
-    setBlockDialogOpen(true);
-  }, []);
-
-  const closeBlockDialog = useCallback(() => {
-    setBlockDialogOpen(false);
-    setBlockTarget(null);
-  }, []);
-
-  const confirmBlock = useCallback(() => {
-    if (!blockTarget) return;
-    // Xóa user khỏi danh sách giống như ban (hoặc đánh dấu block)
-    setMembers(prev => prev.filter(m => m.id !== blockTarget.id));
-    console.log("Blocked:", blockTarget.username);
-    closeBlockDialog();
-  }, [blockTarget, closeBlockDialog]);
-
-  // Handle Prune
   const confirmPrune = useCallback((days, roleId) => {
     const cutoffTs = Date.now() - (parseInt(days) * 86400000);
-    setMembers(prev => {
-      return prev.filter(m => {
-        // 1. Còn hoạt động gần đây -> An toàn (Giữ lại)
-        if (m.lastSeenTs >= cutoffTs) return true;
-        
-        // 2. Không hoạt động ngần ấy ngày -> Khoanh vùng chờ duyệt
-        const hasNoRoles = m.roles.length === 0;
-        const hasSelectedRole = roleId ? m.roles.includes(roleId) : false;
-        
-        // Nếu không có role hoặc cầm đúng cái Role bị chọn -> Khai tử
-        const isPruned = hasNoRoles || hasSelectedRole;
-        
-        return !isPruned; // true = Sống, false = Chết
-      });
-    });
+    setMembers(prev => prev.filter(m => {
+      if (m.lastSeenTs >= cutoffTs) return true;
+      const hasNoRoles = m.roles.length === 0;
+      const hasSelectedRole = roleId ? m.roles.includes(roleId) : false;
+      return !(hasNoRoles || hasSelectedRole);
+    }));
+    showToast(`Members pruned successfully for ${days} days`);
     setPruneDialogOpen(false);
+  }, [showToast]);
+
+  // Auto-remove timeout
+  useEffect(() => {
+    const itv = setInterval(() => {
+      const now = Date.now();
+      setMembers(prev => {
+        let changed = false;
+        const next = prev.map(m => {
+          if (m.isTimeout && m.timeoutUntil && now > m.timeoutUntil) { changed = true; return { ...m, isTimeout: false, timeoutUntil: null }; }
+          return m;
+        });
+        return changed ? next : prev;
+      });
+    }, 1000);
+    return () => clearInterval(itv);
   }, []);
 
   return {
     members: filteredAndSortedMembers,
-    totalCount: members.length,
-    searchQuery,
-    setSearchQuery,
-    selectedMember,
-    setSelectedMember,
-    showMembersInChannel,
-    setShowMembersInChannel,
-    
-    // Sort
-    sortOption,
-    setSortOption,
-    
-    // Prune
-    pruneDialogOpen,
-    openPruneDialog: () => setPruneDialogOpen(true),
-    closePruneDialog: () => setPruneDialogOpen(false),
-    confirmPrune,
-    
-    // Pagination
-    isLoading,
-    hasMore,
-    fetchNextPage,
-
-    // Transfer ownership
-    transferDialogOpen,
-    transferTarget,
-    transferAcknowledged,
-    setTransferAcknowledged,
-    verificationStep,
-    verificationCode,
-    setVerificationCode,
-    openTransferDialog,
-    closeTransferDialog,
-    proceedToVerification,
-    confirmTransfer,
-
-    // Ban member
-    banDialogOpen,
-    banTarget,
-    openBanDialog,
-    closeBanDialog,
-    confirmBan,
-
-    // Change Nickname
-    changeNicknameDialogOpen,
-    changeNicknameTarget,
-    openChangeNicknameDialog,
-    closeChangeNicknameDialog,
-    confirmChangeNickname,
-
-    // Block Member
-    blockDialogOpen,
-    blockTarget,
-    openBlockDialog,
-    closeBlockDialog,
-    confirmBlock,
+    allMembers: members,
+    searchQuery, setSearchQuery,
+    sortMode, changeSortMode,
+    showMembersInChannel, setShowMembersInChannel,
+    isLoading, hasMore, fetchNextPage,
+    transferDialogOpen, transferTarget, transferAcknowledged, setTransferAcknowledged, verificationStep, verificationCode, setVerificationCode, openTransferDialog, closeTransferDialog, proceedToVerification, confirmTransfer,
+    banDialogOpen, banTarget, openBanDialog, closeBanDialog, confirmBan,
+    pruneDialogOpen, openPruneDialog, closePruneDialog, confirmPrune,
+    changeNicknameDialogOpen, changeNicknameTarget, openChangeNicknameDialog, closeChangeNicknameDialog, confirmChangeNickname,
+    blockDialogOpen, blockTarget, openBlockDialog, closeBlockDialog, confirmBlock,
+    timeoutDialogOpen, timeoutTarget, openTimeoutDialog, closeTimeoutDialog, confirmTimeout,
+    kickDialogOpen, kickTarget, openKickDialog, closeKickDialog, confirmKick,
+    toastMessage,
   };
 }
