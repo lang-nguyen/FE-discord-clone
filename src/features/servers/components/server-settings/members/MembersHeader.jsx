@@ -22,8 +22,8 @@ export const MembersHeader = ({ showMembersInChannel, onToggleShowMembers }) => 
           aria-checked={showMembersInChannel}
           aria-labelledby="show-members-toggle-label"
           onClick={onToggleShowMembers}
-          className={`w-10 h-6 shrink-0 rounded-full p-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${
-            showMembersInChannel ? "bg-green-500" : "bg-gray-600"
+          className={`w-10 h-6 shrink-0 rounded-full p-1 transition-colors focus-visible:outline-none ${
+            showMembersInChannel ? "bg-[#23A559]" : "bg-[#80848E]"
           }`}
         >
           <div

@@ -11,8 +11,8 @@ import { Button } from '@/shared/components/ui/Button';
  */
 const ServerHeader = ({ serverName, onClickHeader, onClickInvite }) => {
     return (
-        // THẺ CHỨA NGOÀI CÙNG: làm layout
-        <div className="w-full h-12 flex items-center justify-between px-4 border-b border-[#1F2023]">
+        // THẺ CHỨA NGOÀI CÙNG: làm layout (đã thêm sticky và shrink-0 để cố định ở trên cùng)
+        <div className="w-full h-12 flex items-center justify-between px-4 border-b border-[#1F2023] shrink-0 sticky top-0 z-10 bg-[#2B2D31]">
 
             {/* NÚT BẤM BÊN TRÁI (Tên Server + Mũi tên): Nút Mở Menu */}
             <button
