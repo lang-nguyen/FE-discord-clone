@@ -42,6 +42,7 @@ function App() {
               Main content goes here
             </div>
           } />
+        </Route>
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
