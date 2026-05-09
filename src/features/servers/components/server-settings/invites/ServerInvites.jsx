@@ -14,28 +14,28 @@ export const ServerInvites = ({ serverId }) => {
     <div className="flex-1 min-w-0 pr-6">
       <div className="flex flex-col mb-2">
         <h2 className="text-xl font-bold text-white mb-10">Invites</h2>
-        
+
         <div className="flex items-center justify-between">
           <h3 className="text-[12px] font-bold text-gray-400 uppercase tracking-wide">
             {inviteLogic.isLoading ? "LOADING..." : (inviteLogic.invites.length === 0 ? "NO ACTIVE INVITE LINKS" : "ACTIVE INVITE LINKS")}
           </h3>
           <div className="flex items-center gap-3">
             {inviteLogic.isInvitesPaused ? (
-              <button 
+              <button
                 onClick={() => inviteLogic.setPauseDialogOpen(true)}
                 className="px-4 py-2.5 text-sm font-medium text-white bg-[#5865F2] hover:bg-[#4752c4] rounded-[4px] transition-colors"
               >
                 Enable Invites
               </button>
             ) : (
-              <button 
+              <button
                 onClick={() => inviteLogic.setPauseDialogOpen(true)}
                 className="px-4 py-2.5 text-sm font-medium text-[#da373c] bg-transparent border border-transparent hover:border-[#da373c]/50 hover:bg-[#da373c]/10 rounded-[4px] transition-colors"
               >
                 Pause Invites
               </button>
             )}
-            <button 
+            <button
               onClick={() => inviteLogic.setCreateDialogOpen(true)}
               className="px-4 py-2.5 text-sm font-medium text-white bg-[#5865F2] hover:bg-[#4752c4] rounded-[4px] transition-colors"
             >
@@ -47,15 +47,15 @@ export const ServerInvites = ({ serverId }) => {
 
       <InvitesTable invites={inviteLogic.invites} onRevoke={inviteLogic.revokeInvite} />
 
-      <PauseInvitesDialog 
-        open={inviteLogic.pauseDialogOpen} 
-        onOpenChange={inviteLogic.setPauseDialogOpen} 
+      <PauseInvitesDialog
+        open={inviteLogic.pauseDialogOpen}
+        onOpenChange={inviteLogic.setPauseDialogOpen}
         initialPaused={inviteLogic.isInvitesPaused}
         onSave={inviteLogic.setIsInvitesPaused}
       />
 
-      <CreateInviteDialog 
-        open={inviteLogic.createDialogOpen} 
+      <CreateInviteDialog
+        open={inviteLogic.createDialogOpen}
         onOpenChange={(isOpen) => {
           if (!isOpen && !skipGenerateRef.current) {
             inviteLogic.generateNewInvite();
