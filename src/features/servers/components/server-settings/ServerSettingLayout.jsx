@@ -7,6 +7,7 @@ export function ServerSettingLayout({
   activeTab,
   onTabChange,
   onClose,
+  serverId,
   serverName,
   profileData,
   onUpdateField,
@@ -66,6 +67,7 @@ export function ServerSettingLayout({
           >
             <ContentArea
               activeTab={activeTab}
+              serverId={serverId}
               profileData={profileData}
               onUpdateField={onUpdateField}
             />

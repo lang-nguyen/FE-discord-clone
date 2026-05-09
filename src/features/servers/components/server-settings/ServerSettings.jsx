@@ -4,7 +4,7 @@ import { useServer } from "@/features/servers/composables/server";
 import { useServerProfile } from "@/features/servers/composables/server-profile";
 import { useDeleteConfirm } from "@/features/servers/composables/delete-confirm";
 
-export const ServerSettings = ({ serverName, onClose }) => {
+export const ServerSettings = ({ serverId, serverName, onClose }) => {
   const [activeTab, setActiveTab] = useState("server-profile");
 
   const server = useServer({ serverName, onClose });
@@ -20,6 +20,7 @@ export const ServerSettings = ({ serverName, onClose }) => {
         activeTab={activeTab}
         onTabChange={setActiveTab}
         onClose={onClose}
+        serverId={serverId}
         serverName={profile.profileData.serverName}
         profileData={profile.profileData}
         onUpdateField={profile.updateField}

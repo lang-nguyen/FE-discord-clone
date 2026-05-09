@@ -10,7 +10,7 @@ const TAB_COMPONENTS = {
   "invites": ServerInvites,
 };
 
-export const ContentArea = ({ activeTab, profileData, onUpdateField }) => {
+export const ContentArea = ({ activeTab, serverId, profileData, onUpdateField }) => {
   const Component = TAB_COMPONENTS[activeTab];
 
   if (!Component) {
@@ -27,7 +27,7 @@ export const ContentArea = ({ activeTab, profileData, onUpdateField }) => {
   }
 
   if (activeTab === "members") {
-    return <Component serverName={profileData.serverName} />;
+    return <Component serverId={serverId} serverName={profileData.serverName} />;
   }
 
   return <Component />;

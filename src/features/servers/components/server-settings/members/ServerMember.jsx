@@ -11,10 +11,10 @@ import { TimeoutMemberDialog } from "./TimeoutMemberDialog";
 import { KickMemberDialog } from "./KickMemberDialog";
 import { TransferOwnershipDialog } from "./TransferOwnershipDialog";
 
-export const ServerMembers = ({ serverName }) => {
-  console.log("Rendering ServerMembers for:", serverName);
+export const ServerMembers = ({ serverId, serverName }) => {
+  console.log("Rendering ServerMembers for:", serverName, "with ID:", serverId);
   
-  const membersLogic = useMembers({ serverName });
+  const membersLogic = useMembers({ serverId, serverName });
   const { roles } = useRoles();
 
   return (
