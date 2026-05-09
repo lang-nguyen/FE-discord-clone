@@ -1,19 +1,5 @@
 import { useState, useMemo } from "react";
-
-const MOCK_INVITES = [
-  {
-    id: "1",
-    inviter: {
-      name: "sweet6th8",
-      avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704d",
-    },
-    channel: "general",
-    code: "c6mEsCjm",
-    uses: 0,
-    expiresAt: Date.now() + 90106000, // ~1 day, 1 hour, 1 minute
-    roles: [],
-  }
-];
+import { useGetInvitesQuery, useCreateInviteMutation, useDeleteInviteMutation } from "../../../../api/inviteApi";
 
 const MOCK_FRIENDS = [
   { id: "1", username: "user1", displayName: "user1", avatar: "https://i.pravatar.cc/150?u=1" },
@@ -26,16 +12,34 @@ const MOCK_FRIENDS = [
   { id: "8", username: "user8", displayName: "user8", avatar: "https://i.pravatar.cc/150?u=8" },
 ];
 
-export function useInvites() {
-  const [invites, setInvites] = useState(MOCK_INVITES);
+export function useInvites(serverId = "server-1") {
+  // RTK Query hooks automatically handle fetch, loading state, and caching
+  const { data: fetchedInvites = [], isLoading } = useGetInvitesQuery(serverId);
+  const [createInviteApi] = useCreateInviteMutation();
+  const [deleteInviteApi] = useDeleteInviteMutation();
+
   const [friends, setFriends] = useState(MOCK_FRIENDS);
 
   const [isInvitesPaused, setIsInvitesPaused] = useState(false);
-
   const [pauseDialogOpen, setPauseDialogOpen] = useState(false);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
-
   const [searchFriendQuery, setSearchFriendQuery] = useState("");
+
+  // Map data whenever fetchedInvites updates from Redux store
+  const invites = useMemo(() => {
+    return fetchedInvites.map(inv => ({
+      id: inv.inviteCode || inv.id,
+      inviter: {
+        name: inv.inviterName || "Unknown",
+        avatar: inv.inviterAvatar || "https://cdn.discordapp.com/embed/avatars/0.png",
+      },
+      channel: inv.channelName || "general",
+      code: inv.inviteCode || inv.code,
+      uses: inv.uses || 0,
+      expiresAt: inv.expiresAt ? new Date(inv.expiresAt).getTime() : Date.now() + 86400000,
+      roles: inv.roles || [],
+    }));
+  }, [fetchedInvites]);
 
   const filteredFriends = useMemo(() => {
     if (!searchFriendQuery) return friends;
@@ -43,25 +47,23 @@ export function useInvites() {
     return friends.filter(f => f.username.toLowerCase().includes(q) || f.displayName.toLowerCase().includes(q));
   }, [friends, searchFriendQuery]);
 
-  const revokeInvite = (id) => {
-    setInvites(prev => prev.filter(inv => inv.id !== id));
+  const revokeInvite = async (id) => {
+    try {
+      await deleteInviteApi({ serverId, inviteCode: id }).unwrap();
+    } catch (err) {
+      console.error("Failed to revoke invite:", err);
+    }
   };
 
-  const generateNewInvite = () => {
-    const code = Math.random().toString(36).substring(2, 10);
-    const newInvite = {
-      id: Date.now().toString(),
-      inviter: {
-        name: "You",
-        avatar: "https://i.pravatar.cc/150?u=you",
-      },
-      channel: "general",
-      code: code,
-      uses: 0,
-      expiresAt: Date.now() + 604800000, // +7 days
-      roles: [],
-    };
-    setInvites(prev => [newInvite, ...prev]);
+  const generateNewInvite = async () => {
+    try {
+      await createInviteApi({
+        serverId,
+        data: { maxUses: 0, expiresInText: "1:00:00:00" }
+      }).unwrap();
+    } catch (err) {
+      console.error("Failed to create invite:", err);
+    }
   };
 
   return {
@@ -70,6 +72,7 @@ export function useInvites() {
     generateNewInvite,
     isInvitesPaused,
     setIsInvitesPaused,
+    isLoading,
     friends: filteredFriends,
     searchFriendQuery,
     setSearchFriendQuery,

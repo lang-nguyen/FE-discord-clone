@@ -5,8 +5,8 @@ import { CreateInviteDialog } from "./CreateInviteDialog";
 import { EditInviteDialog } from "./EditInviteDialog";
 import { useState, useRef } from "react";
 
-export const ServerInvites = () => {
-  const inviteLogic = useInvites();
+export const ServerInvites = ({ serverId }) => {
+  const inviteLogic = useInvites(serverId);
   const [editInviteOpen, setEditInviteOpen] = useState(false);
   const skipGenerateRef = useRef(false);
 
@@ -17,7 +17,7 @@ export const ServerInvites = () => {
         
         <div className="flex items-center justify-between">
           <h3 className="text-[12px] font-bold text-gray-400 uppercase tracking-wide">
-            {inviteLogic.invites.length === 0 ? "NO ACTIVE INVITE LINKS" : "ACTIVE INVITE LINKS"}
+            {inviteLogic.isLoading ? "LOADING..." : (inviteLogic.invites.length === 0 ? "NO ACTIVE INVITE LINKS" : "ACTIVE INVITE LINKS")}
           </h3>
           <div className="flex items-center gap-3">
             {inviteLogic.isInvitesPaused ? (
