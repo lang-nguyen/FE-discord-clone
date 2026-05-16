@@ -1,6 +1,6 @@
 import { Button } from "@/shared/components/ui/Button";
 
-export const UnsavedChangesBar = ({ onReset, onSave }) => {
+export const UnsavedChangesBar = ({ onReset, onSave, isSaving }) => {
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-center pointer-events-none animate-slide-up">
       <div className="mb-6 mx-4 w-full max-w-[740px] pointer-events-auto">
@@ -17,10 +17,11 @@ export const UnsavedChangesBar = ({ onReset, onSave }) => {
             </button>
             <Button
               size="sm"
-              className="bg-[#248045] hover:bg-[#1a6334] text-white px-6"
+              className="bg-[#248045] hover:bg-[#1a6334] text-white px-6 disabled:opacity-50"
               onClick={onSave}
+              disabled={isSaving}
             >
-              Save Changes
+              {isSaving ? "Saving..." : "Save Changes"}
             </Button>
           </div>
         </div>

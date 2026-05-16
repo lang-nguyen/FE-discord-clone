@@ -6,6 +6,9 @@ import App from './App.jsx';
 import store from './store/store.js';
 import { SocketProvider } from './shared/providers/SocketProvider.jsx';
 import './index.css';
+import { seedDevAuth } from './config/devAuth';
+
+seedDevAuth();
 
 ReactDOM.createRoot(document.getElementById('root')).render(
     <Provider store={store}>

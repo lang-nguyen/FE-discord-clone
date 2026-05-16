@@ -1,7 +1,7 @@
 import { Search, MoreHorizontal, Pencil, Shield } from "lucide-react";
 import { Button } from "@/shared/components/ui/Button";
 
-export const RolesList = ({ roles, onCreateRole, onEditRole }) => {
+export const RolesList = ({ roles, onCreateRole, onEditRole, isCreating }) => {
   return (
     <div className="max-w-[740px]">
       <h2 className="text-[20px] font-bold text-white mb-2">Roles</h2>
@@ -35,8 +35,8 @@ export const RolesList = ({ roles, onCreateRole, onEditRole }) => {
               className="bg-transparent w-full py-2 text-[14px] text-gray-200 focus:outline-none"
             />
           </div>
-          <Button variant="primary" onClick={onCreateRole} className="h-9 px-4 py-0 rounded-[3px] text-[13px] bg-[#5865F2] hover:bg-[#4752C4] font-medium">
-            Create Role
+          <Button variant="primary" onClick={onCreateRole} disabled={isCreating} className="h-9 px-4 py-0 rounded-[3px] text-[13px] bg-[#5865F2] hover:bg-[#4752C4] font-medium disabled:opacity-50">
+            {isCreating ? "Creating..." : "Create Role"}
           </Button>
         </div>
         <p className="text-[#a3a6aa] text-[13px] mb-6">

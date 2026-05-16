@@ -30,7 +30,7 @@ export const ContentArea = ({ activeTab, profileData, onUpdateField }) => {
     return <Component serverName={profileData.serverName} />;
   }
 
-  if (activeTab === "invites") {
+  if (activeTab === "invites" || activeTab === "roles") {
     return <Component serverId={profileData.id || "12345678-1234-1234-1234-123456789012"} />;
   }
 

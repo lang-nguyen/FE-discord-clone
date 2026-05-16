@@ -1,17 +1,9 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { createApi } from '@reduxjs/toolkit/query/react';
+import { baseQueryWithAuth } from './baseApi';
 
 export const inviteApi = createApi({
     reducerPath: 'inviteApi',
-    baseQuery: fetchBaseQuery({
-        baseUrl: `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api`,
-        prepareHeaders: (headers) => {
-            const token = localStorage.getItem('access_token');
-            if (token) {
-                headers.set('authorization', `Bearer ${token}`);
-            }
-            return headers;
-        },
-    }),
+    baseQuery: baseQueryWithAuth,
     tagTypes: ['Invite'],
     endpoints: (builder) => ({
         // Lấy danh sách invite của một server
