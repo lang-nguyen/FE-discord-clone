@@ -1,18 +1,18 @@
 import { useState, useMemo } from "react";
-import { useGetInvitesQuery, useCreateInviteMutation, useDeleteInviteMutation } from "../../../../api/inviteApi";
+import { useGetInvitesQuery, useCreateInviteMutation, useDeleteInviteMutation } from "@/api/inviteApi";
 
 const MOCK_FRIENDS = [
-  { id: "1", username: "user1", displayName: "user1", avatar: "https://i.pravatar.cc/150?u=1" },
-  { id: "2", username: "user2", displayName: "user2", avatar: "https://i.pravatar.cc/150?u=2" },
-  { id: "3", username: "user3", displayName: "user3", avatar: "https://i.pravatar.cc/150?u=3" },
-  { id: "4", username: "user4", displayName: "user4", avatar: "https://i.pravatar.cc/150?u=4" },
-  { id: "5", username: "user5", displayName: "user5", avatar: "https://i.pravatar.cc/150?u=5" },
-  { id: "6", username: "user6", displayName: "user6", avatar: "https://i.pravatar.cc/150?u=6" },
-  { id: "7", username: "user7", displayName: "user7", avatar: "https://i.pravatar.cc/150?u=7" },
-  { id: "8", username: "user8", displayName: "user8", avatar: "https://i.pravatar.cc/150?u=8" },
+  { id: "3fa85f64-5717-4562-b3fc-2c963f66afa1", username: "user1", displayName: "user1", avatar: "https://i.pravatar.cc/150?u=1" },
+  { id: "3fa85f64-5717-4562-b3fc-2c963f66afa2", username: "user2", displayName: "user2", avatar: "https://i.pravatar.cc/150?u=2" },
+  { id: "3fa85f64-5717-4562-b3fc-2c963f66afa3", username: "user3", displayName: "user3", avatar: "https://i.pravatar.cc/150?u=3" },
+  { id: "3fa85f64-5717-4562-b3fc-2c963f66afa4", username: "user4", displayName: "user4", avatar: "https://i.pravatar.cc/150?u=4" },
+  { id: "3fa85f64-5717-4562-b3fc-2c963f66afa5", username: "user5", displayName: "user5", avatar: "https://i.pravatar.cc/150?u=5" },
+  { id: "3fa85f64-5717-4562-b3fc-2c963f66afa6", username: "user6", displayName: "user6", avatar: "https://i.pravatar.cc/150?u=6" },
+  { id: "3fa85f64-5717-4562-b3fc-2c963f66afa7", username: "user7", displayName: "user7", avatar: "https://i.pravatar.cc/150?u=7" },
+  { id: "3fa85f64-5717-4562-b3fc-2c963f66afa8", username: "user8", displayName: "user8", avatar: "https://i.pravatar.cc/150?u=8" },
 ];
 
-export function useInvites(serverId = "server-1") {
+export function useInvites(serverId = "12345678-1234-1234-1234-123456789012") {
   // RTK Query hooks automatically handle fetch, loading state, and caching
   const { data: fetchedInvites = [], isLoading } = useGetInvitesQuery(serverId);
   const [createInviteApi] = useCreateInviteMutation();
@@ -49,7 +49,7 @@ export function useInvites(serverId = "server-1") {
 
   const revokeInvite = async (id) => {
     try {
-      await deleteInviteApi({ serverId, inviteCode: id }).unwrap();
+      await deleteInviteApi(id).unwrap();
     } catch (err) {
       console.error("Failed to revoke invite:", err);
     }
@@ -59,10 +59,21 @@ export function useInvites(serverId = "server-1") {
     try {
       await createInviteApi({
         serverId,
-        data: { maxUses: 0, expiresInText: "1:00:00:00" }
+        data: { maxUses: 0, expiryHours: 24 }
       }).unwrap();
     } catch (err) {
       console.error("Failed to create invite:", err);
+    }
+  };
+
+  const inviteFriend = async (friendId) => {
+    try {
+      await createInviteApi({
+        serverId,
+        data: { invitedUserId: friendId, maxUses: 1, expiryHours: 24 }
+      }).unwrap();
+    } catch (err) {
+      console.error("Failed to invite friend:", err);
     }
   };
 
@@ -70,6 +81,7 @@ export function useInvites(serverId = "server-1") {
     invites,
     revokeInvite,
     generateNewInvite,
+    inviteFriend,
     isInvitesPaused,
     setIsInvitesPaused,
     isLoading,

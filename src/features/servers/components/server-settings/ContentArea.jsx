@@ -31,7 +31,7 @@ export const ContentArea = ({ activeTab, profileData, onUpdateField }) => {
   }
 
   if (activeTab === "invites") {
-    return <Component serverId={profileData.id || "server-1"} />;
+    return <Component serverId={profileData.id || "12345678-1234-1234-1234-123456789012"} />;
   }
 
   return <Component />;

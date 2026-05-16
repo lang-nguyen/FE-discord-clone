@@ -12,7 +12,7 @@ export const SocketProvider = ({ children }) => {
 
     useEffect(() => {
         const connection = new signalR.HubConnectionBuilder()
-            .withUrl('http://localhost:5000/hubs/messages', {
+            .withUrl(`${import.meta.env.VITE_API_URL || 'https://localhost:7150'}/hubs/messages`, {
                 // Tắt comment dòng dưới nếu gặp lỗi CORS policy (nếu BE không có auth cookie)
                 skipNegotiation: true,
                 transport: signalR.HttpTransportType.WebSockets

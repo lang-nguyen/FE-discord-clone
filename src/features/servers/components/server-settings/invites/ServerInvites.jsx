@@ -71,6 +71,7 @@ export const ServerInvites = ({ serverId }) => {
           inviteLogic.setCreateDialogOpen(false);
           setEditInviteOpen(true);
         }}
+        onInviteFriend={inviteLogic.inviteFriend}
       />
 
       <EditInviteDialog

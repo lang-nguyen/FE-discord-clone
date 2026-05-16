@@ -1,26 +1,26 @@
 export const DUMMY_SERVERS = [
     {
-        id: 'server-1',
+        id: '12345678-1234-1234-1234-123456789012',
         name: 'React Developers',
         icon: 'https://ui-avatars.com/api/?name=React+Developers&background=61dafb&color=fff',
     },
     {
-        id: 'server-2',
+        id: '12345678-1234-1234-1234-123456789013',
         name: 'Gaming Lounge',
         icon: 'https://ui-avatars.com/api/?name=Gaming+Lounge&background=7289da&color=fff',
     },
     {
-        id: 'server-3',
+        id: '12345678-1234-1234-1234-123456789014',
         name: 'Study Group',
         icon: 'https://ui-avatars.com/api/?name=Study+Group&background=ffcc00&color=000',
     },
     {
-        id: 'server-4',
+        id: '12345678-1234-1234-1234-123456789015',
         name: 'Design Hub',
         icon: 'https://ui-avatars.com/api/?name=Design+Hub&background=ff6699&color=fff',
     },
     {
-        id: 'server-5',
+        id: '12345678-1234-1234-1234-123456789016',
         name: 'Music Club',
         icon: 'https://ui-avatars.com/api/?name=Music+Club&background=9933ff&color=fff',
     },

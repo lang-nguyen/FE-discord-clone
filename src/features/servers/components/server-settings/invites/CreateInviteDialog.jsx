@@ -10,13 +10,19 @@ export const CreateInviteDialog = ({
   friends,
   searchQuery,
   onSearchChange,
-  onEditClick
+  onEditClick,
+  onInviteFriend
 }) => {
   const [invited, setInvited] = useState({});
   const [copied, setCopied] = useState(false);
 
   const handleInvite = (id) => {
-    setInvited(prev => ({ ...prev, [id]: true }));
+    if (!invited[id]) {
+      setInvited(prev => ({ ...prev, [id]: true }));
+      if (onInviteFriend) {
+        onInviteFriend(id);
+      }
+    }
   };
 
   const handleCopy = () => {

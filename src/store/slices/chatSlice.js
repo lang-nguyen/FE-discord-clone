@@ -6,7 +6,7 @@ const initialState = {
     servers: DUMMY_SERVERS,
     channels: DUMMY_CHANNELS,
     messages: DUMMY_MESSAGES,
-    activeServerId: 'server-1',
+    activeServerId: '12345678-1234-1234-1234-123456789012',
     activeChannelId: 'channel-1',
     currentUser: {
         id: 'me',
