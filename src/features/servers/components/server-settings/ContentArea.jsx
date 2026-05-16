@@ -2,12 +2,14 @@ import { ServerProfile } from "./profile/ServerProfile";
 import { ServerMembers } from "./members/ServerMember";
 import { ServerRoles } from "./roles/ServerRoles";
 import { ServerInvites } from "./invites/ServerInvites";
+import { ServerBans } from "./bans/ServerBans";
 
 const TAB_COMPONENTS = {
   "server-profile": ServerProfile,
   "members": ServerMembers,
   "roles": ServerRoles,
   "invites": ServerInvites,
+  "bans": ServerBans,
 };
 
 export const ContentArea = ({ activeTab, profileData, onUpdateField }) => {
@@ -26,7 +28,7 @@ export const ContentArea = ({ activeTab, profileData, onUpdateField }) => {
     return <Component data={profileData} onUpdateField={onUpdateField} />;
   }
 
-  if (activeTab === "members") {
+  if (activeTab === "members" || activeTab === "bans") {
     return <Component serverName={profileData.serverName} />;
   }
 

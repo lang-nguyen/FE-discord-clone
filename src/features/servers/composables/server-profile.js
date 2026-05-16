@@ -1,4 +1,5 @@
-import { useState, useRef, useCallback, useMemo } from "react";
+import { useState, useRef, useCallback, useMemo, useEffect } from "react";
+import { serverApi } from "@/features/servers/api/server.api";
 
 const DEFAULT_PROFILE_DATA = {
   serverName: "",
@@ -6,9 +7,9 @@ const DEFAULT_PROFILE_DATA = {
   isPrivate: true,
   selectedBanner: 0,
   avatarUrl: "",
-  onlineCount: 5,
-  membersCount: 10,
-  establishedDate: "Oct 2025",
+  onlineCount: 0,
+  membersCount: 0,
+  establishedDate: "",
 };
 
 /**
@@ -28,6 +29,42 @@ export function useServerProfile({ serverName }) {
   const [profileData, setProfileData] = useState({
     ...initialData.current,
   });
+
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Fetch profile when serverName changes
+  useEffect(() => {
+    let isMounted = true;
+    const fetchProfile = async () => {
+      if (!serverName) return;
+      setIsLoading(true);
+      setError(null);
+      try {
+        const data = await serverApi.getProfile(serverName);
+        if (isMounted && data) {
+          const fetchedData = {
+            ...DEFAULT_PROFILE_DATA,
+            ...data,
+            serverName: data.serverName || serverName, // Ensure serverName is present
+          };
+          initialData.current = fetchedData;
+          setProfileData(fetchedData);
+        }
+      } catch (err) {
+        console.error("Failed to fetch server profile", err);
+        if (isMounted) setError("Failed to load server profile.");
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+    };
+
+    fetchProfile();
+    return () => {
+      isMounted = false;
+    };
+  }, [serverName]);
 
   // So sánh field-by-field để detect thay đổi
   const hasChanges = useMemo(() => {
@@ -54,14 +91,21 @@ export function useServerProfile({ serverName }) {
 
   // Lưu profile
   const saveProfile = useCallback(async () => {
-    // TODO: Call API to save profile
-    // await api.put(`/servers/${serverId}/profile`, profileData);
-
-    // Sau khi save thành công → cập nhật initialData
-    initialData.current = { ...profileData };
-    // Force re-render để hasChanges = false
-    setProfileData((prev) => ({ ...prev }));
-  }, [profileData]);
+    setIsSaving(true);
+    setError(null);
+    try {
+      await serverApi.updateProfile(serverName, profileData);
+      // Sau khi save thành công → cập nhật initialData
+      initialData.current = { ...profileData };
+      // Force re-render để hasChanges = false bằng cách set lại state
+      setProfileData((prev) => ({ ...prev }));
+    } catch (err) {
+      console.error("Failed to save server profile", err);
+      setError("Failed to save server profile.");
+    } finally {
+      setIsSaving(false);
+    }
+  }, [profileData, serverName]);
 
   return {
     profileData,
@@ -70,5 +114,8 @@ export function useServerProfile({ serverName }) {
     updateField,
     resetProfile,
     saveProfile,
+    isLoading,
+    isSaving,
+    error,
   };
 }

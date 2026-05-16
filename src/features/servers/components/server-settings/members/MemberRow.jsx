@@ -62,6 +62,11 @@ export const MemberRow = ({
                 </div>
               </div>
             )}
+            {member.isBlocked && (
+              <span className="bg-[#da373c]/20 text-[#da373c] text-[10px] font-bold px-1.5 py-[2px] rounded-sm uppercase tracking-wider">
+                Blocked
+              </span>
+            )}
           </div>
           <div className="text-[12px] text-gray-400 truncate">{member.username}</div>
         </div>

@@ -29,7 +29,7 @@ export const MemberContextMenu = ({
 
         <DropdownMenuItem onClick={() => onChangeNickname(member)}>Change Nickname</DropdownMenuItem>
         <DropdownMenuItem className="text-red-400 focus:text-red-300" onClick={() => onBlockMember(member)}>
-          Block
+          {member.isBlocked ? "Unblock" : "Block"}
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />

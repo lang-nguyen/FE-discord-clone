@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { serverApi } from "@/features/servers/api/server.api";
 
 /**
  * Composable quản lý hành vi server:
@@ -9,16 +10,23 @@ export function useServer({ serverName: initialServerName, onClose }) {
   const [serverName] = useState(initialServerName || "");
 
   const fetchServer = useCallback(async () => {
-    // TODO: Call API to fetch server info
-    // const response = await api.get(`/servers/${serverId}`);
-    // return response.data;
-  }, []);
+    try {
+      const data = await serverApi.getServer(serverName);
+      return data;
+    } catch (err) {
+      console.error(err);
+      return null;
+    }
+  }, [serverName]);
 
   const deleteServer = useCallback(async () => {
-    // TODO: Call API to delete server
-    // await api.delete(`/servers/${serverId}`);
-    console.log("Server deleted:", serverName);
-    if (onClose) onClose();
+    try {
+      await serverApi.deleteServer(serverName);
+      console.log("Server deleted:", serverName);
+      if (onClose) onClose();
+    } catch (err) {
+      console.error(err);
+    }
   }, [serverName, onClose]);
 
   return {

@@ -19,6 +19,7 @@ const SIDEBAR_SECTIONS = [
       { id: "members", name: "Members" },
       { id: "roles", name: "Roles" },
       { id: "invites", name: "Invites" },
+      { id: "bans", name: "Bans" },
     ],
   }
 ];

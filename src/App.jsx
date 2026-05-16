@@ -39,7 +39,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
       </Route>
-      <Route path="/test-settings" element={<ServerSettings serverName="Local Test Server" onClose={() => window.location.href="/"} />} />
+      <Route path="/test-settings" element={<ServerSettings serverName="5fefa96e-d2e1-4aa9-a1f6-bdc1e5c3aa10" onClose={() => window.location.href = "/"} />} />
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   )

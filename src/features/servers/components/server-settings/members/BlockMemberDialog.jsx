@@ -29,10 +29,10 @@ export const BlockMemberDialog = ({
           </div>
 
           <h2 className="text-[22px] font-bold text-white mb-1">
-            Block {targetMember.username}?
+            {targetMember.isBlocked ? `Unblock ${targetMember.username}?` : `Block ${targetMember.username}?`}
           </h2>
           <p className="text-[15px] font-medium text-white mb-6">
-            Stop direct contact and limit what they view
+            {targetMember.isBlocked ? "They will be able to contact you and view your activity" : "Stop direct contact and limit what they view"}
           </p>
 
           <div className="w-full flex flex-col gap-5 text-left mb-6">
@@ -82,7 +82,7 @@ export const BlockMemberDialog = ({
             onClick={() => onConfirm()} 
             className="flex-[1.2] text-white bg-[#da373c] hover:bg-[#a12828] h-[40px] rounded-[4px] font-medium transition-colors"
           >
-            Block
+            {targetMember.isBlocked ? "Unblock" : "Block"}
           </Button>
         </div>
       </DialogContent>

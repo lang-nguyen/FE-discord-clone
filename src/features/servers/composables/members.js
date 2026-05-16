@@ -1,8 +1,9 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
+import { addBannedMember } from "./bans";
 
 const INITIAL_MEMBERS = [
-  { id: "1", username: "thien", name: "thien", memberSince: "Aug 10, 2023", joinedDiscord: "May 5, 2020", joinMethod: "Invite", roles: ["role-1"], lastSeenTs: Date.now() - (40 * 86400000), isTimeout: false, timeoutUntil: null },
-  { id: "2", username: "nieahh_04", name: "nieahh_04", memberSince: "Jan 15, 2024", joinedDiscord: "Dec 12, 2021", joinMethod: "Invite", roles: ["role-2"], lastSeenTs: Date.now() - (20 * 86400000), isTimeout: false, timeoutUntil: null },
+  { id: "1", username: "thien", name: "thien", memberSince: "Aug 10, 2023", joinedDiscord: "May 5, 2020", joinMethod: "Invite", roles: ["role-1"], lastSeenTs: Date.now() - (40 * 86400000), isTimeout: false, timeoutUntil: null, isBlocked: false },
+  { id: "2", username: "nieahh_04", name: "nieahh_04", memberSince: "Jan 15, 2024", joinedDiscord: "Dec 12, 2021", joinMethod: "Invite", roles: ["role-2"], lastSeenTs: Date.now() - (20 * 86400000), isTimeout: false, timeoutUntil: null, isBlocked: false },
 ];
 
 // Sinh thêm data giả lập
@@ -17,13 +18,21 @@ for (let i = 3; i <= 50; i++) {
     roles: [],
     lastSeenTs: Date.now() - (i * 100000000),
     isTimeout: false,
-    timeoutUntil: null
+    timeoutUntil: null,
+    isBlocked: false
   });
 }
 
+let GLOBAL_MEMBERS = INITIAL_MEMBERS;
+
 export function useMembers({ serverName }) {
   console.log("useMembers hook initialized");
-  const [members, setMembers] = useState(INITIAL_MEMBERS);
+  const [members, setMembers] = useState(GLOBAL_MEMBERS);
+
+  // Sync state back to GLOBAL_MEMBERS on change so it persists when switching tabs
+  useEffect(() => {
+    GLOBAL_MEMBERS = members;
+  }, [members]);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortMode, setSortMode] = useState("member-newest");
   const [showMembersInChannel, setShowMembersInChannel] = useState(false);
@@ -104,7 +113,14 @@ export function useMembers({ serverName }) {
 
   const openBanDialog = useCallback((m) => { setBanTarget(m); setBanDialogOpen(true); }, []);
   const closeBanDialog = useCallback(() => { setBanDialogOpen(false); setBanTarget(null); }, []);
-  const confirmBan = useCallback(() => { setMembers(prev => prev.filter(m => m.id !== banTarget?.id)); showToast("Member banned"); closeBanDialog(); }, [banTarget, closeBanDialog, showToast]);
+  const confirmBan = useCallback(() => { 
+    if (banTarget) {
+      addBannedMember(banTarget);
+      setMembers(prev => prev.filter(m => m.id !== banTarget.id)); 
+    }
+    showToast("Member banned"); 
+    closeBanDialog(); 
+  }, [banTarget, closeBanDialog, showToast]);
 
   const openChangeNicknameDialog = useCallback((m) => { setChangeNicknameTarget(m); setChangeNicknameDialogOpen(true); }, []);
   const closeChangeNicknameDialog = useCallback(() => { setChangeNicknameDialogOpen(false); setChangeNicknameTarget(null); }, []);
@@ -112,7 +128,13 @@ export function useMembers({ serverName }) {
 
   const openBlockDialog = useCallback((m) => { setBlockTarget(m); setBlockDialogOpen(true); }, []);
   const closeBlockDialog = useCallback(() => { setBlockDialogOpen(false); setBlockTarget(null); }, []);
-  const confirmBlock = useCallback(() => { setMembers(prev => prev.filter(m => m.id !== blockTarget?.id)); showToast("Member blocked"); closeBlockDialog(); }, [blockTarget, closeBlockDialog, showToast]);
+  const confirmBlock = useCallback(() => {
+    if (!blockTarget) return;
+    const isBlocking = !blockTarget.isBlocked;
+    setMembers(prev => prev.map(m => m.id === blockTarget.id ? { ...m, isBlocked: isBlocking } : m));
+    showToast(isBlocking ? "Member blocked" : "Member unblocked");
+    closeBlockDialog();
+  }, [blockTarget, closeBlockDialog, showToast]);
 
   const openTimeoutDialog = useCallback((m) => { setTimeoutTarget(m); setTimeoutDialogOpen(true); }, []);
   const closeTimeoutDialog = useCallback(() => { setTimeoutDialogOpen(false); setTimeoutTarget(null); }, []);

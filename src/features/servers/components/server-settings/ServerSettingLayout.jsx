@@ -11,6 +11,7 @@ export function ServerSettingLayout({
   profileData,
   onUpdateField,
   hasChanges,
+  isSaving,
   onReset,
   onSave,
   deleteConfirm,
@@ -60,9 +61,8 @@ export function ServerSettingLayout({
         {/* ContentArea tự quản lý scroll bên trong */}
         <div className="flex-1 overflow-y-auto">
           <div
-            className={`py-[60px] px-10 ${
-              activeTab === "members" ? "max-w-[1024px]" : "max-w-[740px]"
-            }`}
+            className={`py-[60px] px-10 ${activeTab === "members" ? "max-w-[1024px]" : "max-w-[740px]"
+              }`}
           >
             <ContentArea
               activeTab={activeTab}
@@ -75,7 +75,7 @@ export function ServerSettingLayout({
 
       {/* Unsaved changes bar */}
       {hasChanges && (
-        <UnsavedChangesBar onReset={onReset} onSave={onSave} />
+        <UnsavedChangesBar onReset={onReset} onSave={onSave} isSaving={isSaving} />
       )}
 
       {/* Delete server dialog */}
