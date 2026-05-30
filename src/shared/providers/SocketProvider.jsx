@@ -11,8 +11,14 @@ export const SocketProvider = ({ children }) => {
     const [isConnected, setIsConnected] = useState(false);
 
     useEffect(() => {
+        const wsUrl = import.meta.env.VITE_WS_URL;
+        if (!wsUrl) {
+            console.warn('VITE_WS_URL is not configured. SignalR connection is skipped.');
+            return;
+        }
+
         const connection = new signalR.HubConnectionBuilder()
-            .withUrl(import.meta.env.VITE_WS_URL || 'http://localhost:5218/hubs/messages', {
+            .withUrl(wsUrl, {
                 // Tắt comment dòng dưới nếu gặp lỗi CORS policy (nếu BE không có auth cookie)
                 skipNegotiation: true,
                 transport: signalR.HttpTransportType.WebSockets

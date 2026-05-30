@@ -1,18 +1,39 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { Input } from '../../../shared/components/Input';
 import { Button } from '../../../shared/components/Button';
+import { clearAuthError, registerThunk } from '@/store/slices/authSlice';
 
 export function RegisterPage() {
 
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const { status, error } = useSelector((state) => state.auth);
+
     const [email, setEmail] = useState('');
     const [username, setUsername] = useState('');
+    const [displayName, setDisplayName] = useState('');
     const [password, setPassword] = useState('');
     const [dob, setDob] = useState('');
 
-    const handleSubmit = (e) => {
+    const isLoading = status === "loading";
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Register attempt', { email, username, password, dob });
+        dispatch(clearAuthError());
+
+        const result = await dispatch(registerThunk({
+            email,
+            username,
+            password,
+            displayName: displayName || username,
+            dob,
+        }));
+
+        if (registerThunk.fulfilled.match(result)) {
+            navigate("/channels/@me", { replace: true });
+        }
     };
 
     return (
@@ -45,6 +66,14 @@ export function RegisterPage() {
                 />
 
                 <Input
+                    label="Display Name"
+                    type="text"
+                    placeholder="How others see you"
+                    value={displayName}
+                    onChange={(e) => setDisplayName(e.target.value)}
+                />
+
+                <Input
                     label="Password"
                     type="password"
                     required
@@ -61,14 +90,20 @@ export function RegisterPage() {
                     onChange={(e) => setDob(e.target.value)}
                 />
 
-                {/* Button dùng từ component */}
+                {error && (
+                    <p className="rounded-sm bg-red-500/10 px-3 py-2 text-sm text-red-300">
+                        {error}
+                    </p>
+                )}
+
                 <Button
                     type="submit"
                     variant="primary"
                     size="lg"
                     className="w-full mt-6"
+                    disabled={isLoading}
                 >
-                    Continue
+                    {isLoading ? "Creating account..." : "Continue"}
                 </Button>
 
             </form>
