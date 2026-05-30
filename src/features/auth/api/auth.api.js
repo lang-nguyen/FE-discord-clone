@@ -35,4 +35,14 @@ export const authApi = {
     const response = await apiClient.post("/api/accounts/forgot-password", { email });
     return response.data;
   },
+
+  async verifyResetCode(payload) {
+    const response = await apiClient.post("/api/accounts/verify-reset-code", payload);
+    return response.data;
+  },
+
+  async resetPassword(payload) {
+    const response = await apiClient.post("/api/accounts/reset-password", payload);
+    return response.data;
+  },
 };

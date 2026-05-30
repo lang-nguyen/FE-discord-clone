@@ -13,6 +13,8 @@ import { useUserSettingsModal } from "@/features/users/composables/user-settings
 export function UserSettingsModal({ open, onOpenChange }) {
   const {
     activeSection,
+    avatarFile,
+    avatarUploadMessage,
     error,
     form,
     handleChangePassword,
@@ -25,6 +27,7 @@ export function UserSettingsModal({ open, onOpenChange }) {
     passwordMessage,
     setActiveSection,
     togglePasswordVisibility,
+    updateAvatarFile,
     updateField,
     updatePasswordField,
     visiblePasswords,
@@ -86,11 +89,22 @@ export function UserSettingsModal({ open, onOpenChange }) {
                 />
               </div>
 
-              <Input
-                label="Avatar URL"
-                value={form.avatarUrl}
-                onChange={(event) => updateField("avatarUrl", event.target.value)}
-              />
+              <div className="space-y-2">
+                <label className="text-xs font-bold uppercase tracking-wide text-gray-300">
+                  Upload Avatar
+                </label>
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp,image/gif"
+                  onChange={(event) => updateAvatarFile(event.target.files?.[0] ?? null)}
+                  className="block w-full text-sm text-gray-300 file:mr-3 file:rounded-md file:border-0 file:bg-[#5865F2] file:px-3 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-[#4752C4]"
+                />
+                {(avatarFile || avatarUploadMessage) && (
+                  <p className={`text-xs ${avatarUploadMessage.includes("Unable") ? "text-red-300" : "text-gray-400"}`}>
+                    {avatarUploadMessage || avatarFile?.name}
+                  </p>
+                )}
+              </div>
 
               <div className="space-y-2">
                 <label className="text-xs font-bold uppercase tracking-wide text-gray-300">
@@ -104,19 +118,12 @@ export function UserSettingsModal({ open, onOpenChange }) {
                 />
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-[120px_1fr]">
-                <Input
-                  label="Banner Color"
-                  type="color"
-                  value={form.bannerColor}
-                  onChange={(event) => updateField("bannerColor", event.target.value)}
-                />
-                <Input
-                  label="Banner URL"
-                  value={form.bannerUrl}
-                  onChange={(event) => updateField("bannerUrl", event.target.value)}
-                />
-              </div>
+              <Input
+                label="Banner Color"
+                type="color"
+                value={form.bannerColor}
+                onChange={(event) => updateField("bannerColor", event.target.value)}
+              />
 
               {error && <p className="text-sm text-red-300">{error}</p>}
 

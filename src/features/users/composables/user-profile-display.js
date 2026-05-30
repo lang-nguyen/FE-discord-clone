@@ -7,9 +7,7 @@ export function getUsername(user, displayName) {
 }
 
 export function getProfileBannerStyle(profile, fallbackColor = "#5865F2") {
-  return profile?.bannerUrl
-    ? { backgroundImage: `url(${profile.bannerUrl})` }
-    : { backgroundColor: profile?.bannerColor || fallbackColor };
+  return { backgroundColor: profile?.bannerColor || fallbackColor };
 }
 
 export function formatMemberSince(createdAt, fallback = "22 May 2024") {

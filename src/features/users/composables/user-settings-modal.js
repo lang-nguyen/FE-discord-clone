@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { authApi } from "@/features/auth/api/auth.api";
+import { profileApi } from "@/features/users/api/profile.api";
 import { logoutThunk, updateProfileThunk } from "@/store/slices/authSlice";
 
 const initialPasswordVisibility = {
@@ -17,9 +18,8 @@ export function useUserSettingsModal({ open, onOpenChange }) {
     displayName: "",
     bio: "",
     note: "",
-    avatarUrl: "",
+    avatarMediaId: null,
     bannerColor: "#5865F2",
-    bannerUrl: "",
   });
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: "",
@@ -27,6 +27,8 @@ export function useUserSettingsModal({ open, onOpenChange }) {
     confirmPassword: "",
   });
   const [visiblePasswords, setVisiblePasswords] = useState(initialPasswordVisibility);
+  const [avatarFile, setAvatarFile] = useState(null);
+  const [avatarUploadMessage, setAvatarUploadMessage] = useState("");
   const [passwordStatus, setPasswordStatus] = useState("idle");
   const [passwordMessage, setPasswordMessage] = useState("");
 
@@ -39,9 +41,8 @@ export function useUserSettingsModal({ open, onOpenChange }) {
         displayName: profile?.displayName || "",
         bio: profile?.bio || "",
         note: profile?.note || "",
-        avatarUrl: profile?.avatarUrl || "",
+        avatarMediaId: profile?.avatarMediaId ?? null,
         bannerColor: profile?.bannerColor || "#5865F2",
-        bannerUrl: profile?.bannerUrl || "",
       });
       setPasswordForm({
         currentPassword: "",
@@ -49,6 +50,8 @@ export function useUserSettingsModal({ open, onOpenChange }) {
         confirmPassword: "",
       });
       setVisiblePasswords(initialPasswordVisibility);
+      setAvatarFile(null);
+      setAvatarUploadMessage("");
       setPasswordMessage("");
     }
   }, [open, profile]);
@@ -65,15 +68,37 @@ export function useUserSettingsModal({ open, onOpenChange }) {
     setVisiblePasswords((current) => ({ ...current, [field]: !current[field] }));
   };
 
+  const updateAvatarFile = (file) => {
+    setAvatarFile(file);
+    setAvatarUploadMessage(file ? file.name : "");
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setAvatarUploadMessage("");
+
+    let avatarMediaId = form.avatarMediaId ?? null;
+    if (avatarFile) {
+      try {
+        const uploadedAvatar = await profileApi.uploadAvatar(avatarFile);
+        avatarMediaId = uploadedAvatar.id;
+      } catch (uploadError) {
+        setAvatarUploadMessage(
+          uploadError.response?.data?.message ||
+          uploadError.response?.data?.Message ||
+          "Unable to upload avatar."
+        );
+        return;
+      }
+    }
+
     const result = await dispatch(updateProfileThunk({
       displayName: form.displayName,
       bio: form.bio || null,
       note: form.note || null,
-      avatarUrl: form.avatarUrl || null,
+      avatarMediaId,
       bannerColor: form.bannerColor || null,
-      bannerUrl: form.bannerUrl || null,
+      bannerUrl: null,
     }));
 
     if (updateProfileThunk.fulfilled.match(result)) {
@@ -127,6 +152,8 @@ export function useUserSettingsModal({ open, onOpenChange }) {
 
   return {
     activeSection,
+    avatarFile,
+    avatarUploadMessage,
     error,
     form,
     handleChangePassword,
@@ -140,6 +167,7 @@ export function useUserSettingsModal({ open, onOpenChange }) {
     setActiveSection,
     togglePasswordVisibility,
     updateField,
+    updateAvatarFile,
     updatePasswordField,
     visiblePasswords,
   };

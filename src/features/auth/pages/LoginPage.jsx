@@ -5,6 +5,7 @@ import { Input } from '@/shared/components/Input.jsx';
 import { Button } from '@/shared/components/Button.jsx';
 import { authApi } from '@/features/auth/api/auth.api';
 import { clearAuthError, loginThunk } from '@/store/slices/authSlice';
+import { PasswordInput } from '@/features/users/components/PasswordInput';
 
 export function LoginPage() {
 
@@ -15,9 +16,17 @@ export function LoginPage() {
     const [usernameOrEmail, setUsernameOrEmail] = useState("");
     const [password, setPassword] = useState("");
     const [forgotEmail, setForgotEmail] = useState("");
+    const [forgotCode, setForgotCode] = useState("");
+    const [resetPassword, setResetPassword] = useState("");
+    const [resetPasswordConfirm, setResetPasswordConfirm] = useState("");
     const [forgotMessage, setForgotMessage] = useState("");
+    const [forgotStep, setForgotStep] = useState("email");
     const [isForgotOpen, setIsForgotOpen] = useState(false);
     const [isForgotLoading, setIsForgotLoading] = useState(false);
+    const [visibleResetPassword, setVisibleResetPassword] = useState({
+        newPassword: false,
+        confirmPassword: false,
+    });
 
     const isLoading = status === "loading";
 
@@ -38,12 +47,69 @@ export function LoginPage() {
 
         try {
             await authApi.forgotPassword(forgotEmail);
-            setForgotMessage("If the email exists, a reset link has been sent.");
+            setForgotMessage("If the email exists, a reset code has been sent.");
+            setForgotStep("code");
         } catch (forgotError) {
             setForgotMessage(forgotError.response?.data?.message || "Unable to send reset email.");
         } finally {
             setIsForgotLoading(false);
         }
+    };
+
+    const handleVerifyResetCode = async (e) => {
+        e.preventDefault();
+        setIsForgotLoading(true);
+        setForgotMessage("");
+
+        try {
+            await authApi.verifyResetCode({ email: forgotEmail, code: forgotCode });
+            setForgotMessage("Code verified. Enter a new password.");
+            setForgotStep("password");
+        } catch (verifyError) {
+            setForgotMessage(verifyError.response?.data?.message || "Invalid or expired code.");
+        } finally {
+            setIsForgotLoading(false);
+        }
+    };
+
+    const handleResetPassword = async (e) => {
+        e.preventDefault();
+        setForgotMessage("");
+
+        if (resetPassword !== resetPasswordConfirm) {
+            setForgotMessage("New password and confirmation do not match.");
+            return;
+        }
+
+        setIsForgotLoading(true);
+        try {
+            await authApi.resetPassword({
+                email: forgotEmail,
+                code: forgotCode,
+                newPassword: resetPassword,
+            });
+            setForgotMessage("Password reset successfully. You can log in now.");
+            setForgotStep("done");
+        } catch (resetError) {
+            setForgotMessage(resetError.response?.data?.message || "Unable to reset password.");
+        } finally {
+            setIsForgotLoading(false);
+        }
+    };
+
+    const openForgotPassword = () => {
+        setIsForgotOpen(true);
+        setForgotStep("email");
+        setForgotEmail(usernameOrEmail.includes("@") ? usernameOrEmail : "");
+        setForgotCode("");
+        setResetPassword("");
+        setResetPasswordConfirm("");
+        setForgotMessage("");
+        setVisibleResetPassword({ newPassword: false, confirmPassword: false });
+    };
+
+    const closeForgotPassword = () => {
+        setIsForgotOpen(false);
     };
 
     return (
@@ -82,10 +148,7 @@ export function LoginPage() {
                 <div className="text-left mt-1">
                     <button
                         type="button"
-                        onClick={() => {
-                            setIsForgotOpen(true);
-                            setForgotEmail(usernameOrEmail.includes("@") ? usernameOrEmail : "");
-                        }}
+                        onClick={openForgotPassword}
                         className="text-sm font-medium text-[#00A8FC] hover:underline"
                     >
                         Forgot your password?
@@ -128,33 +191,95 @@ export function LoginPage() {
                             <p className="mt-1 text-sm text-gray-400">Enter the email linked to your account.</p>
                         </div>
 
-                        <form onSubmit={handleForgotPassword} className="space-y-4">
-                            <Input
-                                label="Email"
-                                type="email"
-                                required
-                                value={forgotEmail}
-                                onChange={(e) => setForgotEmail(e.target.value)}
-                            />
+                        {forgotStep === "email" && (
+                            <form onSubmit={handleForgotPassword} className="space-y-4">
+                                <Input
+                                    label="Email"
+                                    type="email"
+                                    required
+                                    value={forgotEmail}
+                                    onChange={(e) => setForgotEmail(e.target.value)}
+                                />
 
-                            {forgotMessage && (
-                                <p className="text-sm text-gray-300">{forgotMessage}</p>
-                            )}
+                                {forgotMessage && (
+                                    <p className="text-sm text-gray-300">{forgotMessage}</p>
+                                )}
 
-                            <div className="flex justify-end gap-2">
-                                <Button
-                                    type="button"
-                                    variant="secondary"
-                                    onClick={() => setIsForgotOpen(false)}
-                                    disabled={isForgotLoading}
-                                >
-                                    Cancel
-                                </Button>
-                                <Button type="submit" disabled={isForgotLoading}>
-                                    {isForgotLoading ? "Sending..." : "Send"}
-                                </Button>
+                                <div className="flex justify-end gap-2">
+                                    <Button type="button" variant="secondary" onClick={closeForgotPassword} disabled={isForgotLoading}>
+                                        Cancel
+                                    </Button>
+                                    <Button type="submit" disabled={isForgotLoading}>
+                                        {isForgotLoading ? "Sending..." : "Send"}
+                                    </Button>
+                                </div>
+                            </form>
+                        )}
+
+                        {forgotStep === "code" && (
+                            <form onSubmit={handleVerifyResetCode} className="space-y-4">
+                                <Input
+                                    label="Code"
+                                    type="text"
+                                    inputMode="numeric"
+                                    required
+                                    value={forgotCode}
+                                    onChange={(e) => setForgotCode(e.target.value)}
+                                />
+                                {forgotMessage && <p className="text-sm text-gray-300">{forgotMessage}</p>}
+                                <div className="flex justify-end gap-2">
+                                    <Button type="button" variant="secondary" onClick={() => setForgotStep("email")} disabled={isForgotLoading}>
+                                        Back
+                                    </Button>
+                                    <Button type="submit" disabled={isForgotLoading}>
+                                        {isForgotLoading ? "Verifying..." : "Verify"}
+                                    </Button>
+                                </div>
+                            </form>
+                        )}
+
+                        {forgotStep === "password" && (
+                            <form onSubmit={handleResetPassword} className="space-y-4">
+                                <PasswordInput
+                                    label="New Password"
+                                    required
+                                    minLength={8}
+                                    value={resetPassword}
+                                    visible={visibleResetPassword.newPassword}
+                                    onToggle={() => setVisibleResetPassword((current) => ({ ...current, newPassword: !current.newPassword }))}
+                                    onChange={(e) => setResetPassword(e.target.value)}
+                                />
+                                <PasswordInput
+                                    label="Confirm New Password"
+                                    required
+                                    minLength={8}
+                                    value={resetPasswordConfirm}
+                                    visible={visibleResetPassword.confirmPassword}
+                                    onToggle={() => setVisibleResetPassword((current) => ({ ...current, confirmPassword: !current.confirmPassword }))}
+                                    onChange={(e) => setResetPasswordConfirm(e.target.value)}
+                                />
+                                {forgotMessage && <p className="text-sm text-gray-300">{forgotMessage}</p>}
+                                <div className="flex justify-end gap-2">
+                                    <Button type="button" variant="secondary" onClick={() => setForgotStep("code")} disabled={isForgotLoading}>
+                                        Back
+                                    </Button>
+                                    <Button type="submit" disabled={isForgotLoading}>
+                                        {isForgotLoading ? "Saving..." : "Save Password"}
+                                    </Button>
+                                </div>
+                            </form>
+                        )}
+
+                        {forgotStep === "done" && (
+                            <div className="space-y-4">
+                                {forgotMessage && <p className="text-sm text-green-300">{forgotMessage}</p>}
+                                <div className="flex justify-end">
+                                    <Button type="button" onClick={closeForgotPassword}>
+                                        Done
+                                    </Button>
+                                </div>
                             </div>
-                        </form>
+                        )}
                     </div>
                 </div>
             )}
