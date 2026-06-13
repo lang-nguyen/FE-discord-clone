@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { X, Hash, Volume2, Lock } from "lucide-react";
 
+import { getErrorMessage } from "@/shared/api/error";
+
 const CreateChannelModal = ({ isOpen, onClose, onCreate, categoryName, isLoading = false }) => {
   const [channelType, setChannelType] = useState("text"); // 'text' or 'voice'
   const [channelName, setChannelName] = useState("");
@@ -33,17 +35,23 @@ const CreateChannelModal = ({ isOpen, onClose, onCreate, categoryName, isLoading
 
   const handleCreate = async (e) => {
     e.preventDefault();
-    if (channelName.trim() && !isLoading) {
+    const trimmedName = channelName.trim();
+    if (trimmedName.length < 2) {
+      setSubmitError("Channel name must be at least 2 characters.");
+      return;
+    }
+
+    if (!isLoading) {
       setSubmitError("");
       try {
         await onCreate({
-          name: channelName.trim(),
+          name: trimmedName,
           type: channelType,
           isPrivate: isPrivate,
         });
         onClose();
-      } catch {
-        setSubmitError("Unable to create the channel. Please try again.");
+      } catch (error) {
+        setSubmitError(getErrorMessage(error, "Unable to create the channel. Please try again."));
       }
     }
   };
@@ -124,7 +132,10 @@ const CreateChannelModal = ({ isOpen, onClose, onCreate, categoryName, isLoading
 
             {/* 2. CHANNEL NAME INPUT */}
             <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wide text-muted-text select-none">
+              <label
+                htmlFor="channel-name"
+                className="text-xs font-bold uppercase tracking-wide text-muted-text select-none"
+              >
                 Channel Name
               </label>
               <div className="relative flex items-center">
@@ -132,10 +143,12 @@ const CreateChannelModal = ({ isOpen, onClose, onCreate, categoryName, isLoading
                   {channelType === "text" ? <Hash size={16} /> : <Volume2 size={16} />}
                 </div>
                 <input
+                  id="channel-name"
                   type="text"
                   value={channelName}
                   onChange={handleNameChange}
                   placeholder={channelType === "text" ? "new-channel" : "New Channel"}
+                  minLength={2}
                   maxLength={100}
                   required
                   className="w-full bg-input-bg text-primary-text text-sm rounded-[4px] pl-9 pr-4 py-2.5 outline-none focus:ring-0 placeholder:text-muted-text/50 font-medium border border-transparent transition focus:border-[#5865f2]"
@@ -180,7 +193,7 @@ const CreateChannelModal = ({ isOpen, onClose, onCreate, categoryName, isLoading
             </button>
             <button
               type="submit"
-              disabled={!channelName.trim() || isLoading}
+              disabled={channelName.trim().length < 2 || isLoading}
               className="px-6 py-2 bg-[#5865f2] hover:bg-[#4752c4] disabled:opacity-50 text-white text-sm font-bold rounded transition"
             >
               {isLoading ? "Creating..." : "Create Channel"}

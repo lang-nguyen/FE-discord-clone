@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { normalizeChannel, normalizeMessage, normalizeServer } from "@/shared/lib/normalizers";
+import {
+  normalizeCategory,
+  normalizeChannel,
+  normalizeMessage,
+  normalizeServer,
+} from "@/shared/lib/normalizers";
 
 describe("API normalizers", () => {
   it("normalizes PascalCase server responses", () => {
@@ -18,11 +23,27 @@ describe("API normalizers", () => {
     });
   });
 
+  it("builds a public server icon URL from the media id", () => {
+    expect(normalizeServer({ Id: "server-1", Name: "Community", IconMediaId: 42 })).toMatchObject({
+      iconMediaId: 42,
+      imageUrl: expect.stringContaining("/media/42"),
+    });
+  });
+
   it("normalizes numeric voice channels", () => {
     expect(normalizeChannel({ Id: "voice-1", Name: "General", Type: 1 })).toMatchObject({
       id: "voice-1",
       name: "General",
       type: "voice",
+    });
+  });
+
+  it("normalizes channel categories", () => {
+    expect(normalizeCategory({ Id: "category-1", Name: "General", Position: 2 })).toEqual({
+      id: "category-1",
+      name: "General",
+      position: 2,
+      isPrivate: false,
     });
   });
 

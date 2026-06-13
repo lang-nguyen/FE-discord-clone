@@ -8,6 +8,7 @@ const EMPTY_PROFILE = {
   selectedBanner: "#5865F2",
   avatarUrl: "",
   iconId: null,
+  iconMediaId: null,
   onlineCount: 0,
   membersCount: 0,
   establishedDate: "",

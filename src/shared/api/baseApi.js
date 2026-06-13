@@ -4,6 +4,6 @@ import { axiosBaseQuery } from "@/shared/api/axiosBaseQuery";
 export const baseApi = createApi({
   reducerPath: "api",
   baseQuery: axiosBaseQuery(),
-  tagTypes: ["Server", "Channel", "Message", "Conversation", "Profile", "UserBlock"],
+  tagTypes: ["Server", "Channel", "Category", "Message", "Conversation", "Profile", "UserBlock"],
   endpoints: () => ({}),
 });

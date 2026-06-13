@@ -6,7 +6,7 @@ function normalizeServerProfile(value) {
   return {
     ...server,
     serverName: server.name,
-    avatarUrl: server.iconId || "",
+    avatarUrl: server.imageUrl || server.iconId || "",
     description: server.description,
     isPrivate: !server.isPublic,
     selectedBanner: server.bannerColor,
@@ -50,6 +50,7 @@ export const serversApi = baseApi.injectEndpoints({
           serverName: profile.serverName,
           serverDescription: profile.description,
           serverIconId: profile.iconId || null,
+          serverIconMediaId: profile.iconMediaId || null,
           serverBannerColor:
             profile.selectedBanner === undefined ? null : String(profile.selectedBanner),
         },

@@ -6,6 +6,9 @@ const ChannelCategory = ({
     title,
     defaultExpanded = true,
     onAdd,
+    dragProps,
+    isDragging = false,
+    isDropTarget = false,
     children 
 }) => {
     const contentRef = useRef(null);
@@ -49,14 +52,15 @@ const ChannelCategory = ({
     }, [isExpanded]);
 
     return (
-        <div className="mb-2">
+        <div className={cn("mb-2 rounded", isDragging && "opacity-50", isDropTarget && "bg-hover-bg/30")}>
             <div 
+                {...dragProps}
                 id={headerId}
                 role="button"
                 tabIndex={0}
                 aria-expanded={isExpanded}
                 aria-controls={contentId}
-                className="flex items-center justify-between px-4 py-1 mb-[2px] cursor-pointer text-muted-text hover:text-primary-text transition-colors group focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary-text rounded-sm"
+                className="flex items-center justify-between px-4 py-1 mb-[2px] cursor-grab active:cursor-grabbing text-muted-text hover:text-primary-text transition-colors group focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary-text rounded-sm"
                 onClick={handleToggle}
                 onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
@@ -79,6 +83,7 @@ const ChannelCategory = ({
                 
                 {onAdd && (
                     <button 
+                        onPointerDown={(e) => e.stopPropagation()}
                         onClick={(e) => {
                             e.stopPropagation();
                             onAdd();

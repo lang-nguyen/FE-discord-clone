@@ -2,14 +2,23 @@ function read(value, camelKey, pascalKey = camelKey[0].toUpperCase() + camelKey.
   return value?.[camelKey] ?? value?.[pascalKey];
 }
 
+function normalizeId(value) {
+  return typeof value === "string" ? value.toLowerCase() : value;
+}
+
 /** @returns {import("@/shared/models/domain").Server} */
 export function normalizeServer(value = {}) {
+  const iconMediaId = read(value, "iconMediaId") || null;
+  const apiGatewayUrl = import.meta.env.VITE_API_GATEWAY_URL?.replace(/\/$/, "");
+
   return {
     id: read(value, "id"),
     name: read(value, "name") || "",
     description: read(value, "description") || "",
     bannerColor: read(value, "bannerColor") || "#5865F2",
     iconId: read(value, "iconId") || null,
+    iconMediaId,
+    imageUrl: iconMediaId && apiGatewayUrl ? `${apiGatewayUrl}/media/${iconMediaId}` : null,
     ownerId: read(value, "ownerId") || null,
     isPublic: read(value, "isPublic") ?? true,
     createdAt: read(value, "createdAt") || null,
@@ -21,12 +30,21 @@ export function normalizeChannel(value = {}) {
   const rawType = read(value, "type");
 
   return {
-    id: read(value, "id"),
+    id: normalizeId(read(value, "id")),
     name: read(value, "name") || "",
     type: rawType === 1 || rawType === "voice" ? "voice" : "text",
     position: read(value, "position") || 0,
-    categoryId: read(value, "categoryId") || null,
+    categoryId: normalizeId(read(value, "categoryId")) || null,
     categoryName: read(value, "categoryName") || null,
+    isPrivate: Boolean(read(value, "isPrivate")),
+  };
+}
+
+export function normalizeCategory(value = {}) {
+  return {
+    id: normalizeId(read(value, "id")),
+    name: read(value, "name") || "",
+    position: read(value, "position") || 0,
     isPrivate: Boolean(read(value, "isPrivate")),
   };
 }
@@ -38,7 +56,7 @@ export function normalizeMessage(value = {}) {
 
   return {
     id: read(value, "id"),
-    channelId: read(value, "channelId") || null,
+    channelId: normalizeId(read(value, "channelId")) || null,
     receiverId: read(value, "receiverId") || null,
     content: read(value, "content") || "",
     timestamp: read(value, "timestamp") || read(value, "createdAt") || new Date().toISOString(),

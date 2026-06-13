@@ -34,7 +34,7 @@ export function HomePage() {
   const [editingMessage, setEditingMessage] = useState(null);
 
   const activeChannel = useMemo(
-    () => channels.find((channel) => channel.id === channelId),
+    () => channels.find((channel) => channel.id === channelId?.toLowerCase()),
     [channelId, channels]
   );
   const { data: recipientProfile } = useGetProfileByIdQuery(recipientId, {

@@ -10,10 +10,14 @@ import CreateServerModal from "@/features/servers/components/CreateServerModal";
 import CreateChannelModal from "@/features/channels/components/CreateChannelModal";
 import { CreateCategoryDialog } from "@/features/channels/components/CreateCategoryDialog";
 import { useCreateServerMutation, useGetServersQuery } from "@/features/servers/api/serversApi";
+import { uploadServerIcon } from "@/features/servers/api/serverMediaApi";
 import {
   useCreateCategoryMutation,
   useCreateChannelMutation,
+  useGetCategoriesQuery,
   useGetChannelsQuery,
+  useMoveChannelMutation,
+  useReorderCategoryMutation,
 } from "@/features/channels/api/channelsApi";
 import { getErrorMessage } from "@/shared/api/error";
 import { useToast } from "@/shared/ui/ToastProvider";
@@ -43,9 +47,14 @@ export function AppShell() {
   } = useGetChannelsQuery(serverId, {
     skip: !serverId,
   });
+  const { data: categories = [] } = useGetCategoriesQuery(serverId, {
+    skip: !serverId,
+  });
   const [createServer, createServerState] = useCreateServerMutation();
   const [createChannel, createChannelState] = useCreateChannelMutation();
   const [createCategory, createCategoryState] = useCreateCategoryMutation();
+  const [moveChannel] = useMoveChannelMutation();
+  const [reorderCategory] = useReorderCategoryMutation();
 
   const activeServer = useMemo(
     () => servers.find((server) => server.id === serverId) || null,
@@ -77,12 +86,14 @@ export function AppShell() {
     }
   }, [channelsError, showToast]);
 
-  const handleCreateServer = async (name) => {
+  const handleCreateServer = async (name, iconFile) => {
     try {
+      const iconMediaId = iconFile ? await uploadServerIcon(iconFile) : null;
       const server = await createServer({
         serverName: name,
         serverDescription: "A new Discord server",
         serverIconId: null,
+        serverIconMediaId: iconMediaId,
         serverBanner: "#5865F2",
       }).unwrap();
       if (server.id) {
@@ -145,6 +156,30 @@ export function AppShell() {
     }
   };
 
+  const handleMoveChannel = async (move) => {
+    try {
+      await moveChannel({ serverId, ...move }).unwrap();
+    } catch (error) {
+      showToast({
+        title: "Unable to move channel",
+        description: getErrorMessage(error),
+        variant: "error",
+      });
+    }
+  };
+
+  const handleReorderCategory = async (move) => {
+    try {
+      await reorderCategory({ serverId, ...move }).unwrap();
+    } catch (error) {
+      showToast({
+        title: "Unable to reorder category",
+        description: getErrorMessage(error),
+        variant: "error",
+      });
+    }
+  };
+
   return (
     <div className="flex h-screen w-full pl-[72px]">
       <ServerSidebar
@@ -159,9 +194,12 @@ export function AppShell() {
       <ChannelSidebar
         server={activeServer}
         channels={channels}
+        categories={categories}
         activeChannelId={channelId}
         onCreateChannel={modals.openCreateChannel}
         onCreateCategory={() => setCategoryDialogOpen(true)}
+        onMoveChannel={handleMoveChannel}
+        onReorderCategory={handleReorderCategory}
         footer={
           <UserPanelContainer
             onOpenProfile={() => modals.setOpen("userProfile", true)}
@@ -198,6 +236,9 @@ export function AppShell() {
         onClose={() => modals.setOpen("createChannel", false)}
         onCreate={handleCreateChannel}
         isLoading={createChannelState.isLoading}
+        categoryName={
+          categories.find((category) => category.id === modals.targetCategoryId)?.name || null
+        }
       />
       <CreateCategoryDialog
         open={categoryDialogOpen}

@@ -73,6 +73,7 @@ const ChannelActions = ({
                 <ActionTooltip label="Open Chat">
                     <button
                         aria-label="Open Chat"
+                        onPointerDown={(e) => e.stopPropagation()}
                         onClick={(e) => {
                             e.stopPropagation();
                             onOpenChat?.();
@@ -86,6 +87,7 @@ const ChannelActions = ({
             <ActionTooltip label={type === 'voice' ? "Invite to Voice" : "Invite People"}>
                 <button
                     aria-label={type === 'voice' ? "Invite to Voice" : "Invite People"}
+                    onPointerDown={(e) => e.stopPropagation()}
                     onClick={(e) => {
                         e.stopPropagation();
                         onInviteToVoice?.();
@@ -98,6 +100,7 @@ const ChannelActions = ({
             <ActionTooltip label="Edit Channel">
                 <button
                     aria-label="Edit Channel"
+                    onPointerDown={(e) => e.stopPropagation()}
                     onClick={(e) => {
                         e.stopPropagation();
                         onEditChannel?.();
@@ -122,12 +125,18 @@ const ChannelItem = ({
     onChannelClick,
     onOpenChat,
     onInviteToVoice,
-    onEditChannel
+    onEditChannel,
+    dragProps,
+    isDragging = false,
+    isDropTarget = false,
 }) => {
     return (
         <div
+            {...dragProps}
             className={cn(
-                "group relative flex items-center justify-between px-2 py-1.5 mx-2 rounded-md transition-colors",
+                "group relative flex items-center justify-between px-2 py-1.5 mx-2 rounded-md transition-colors cursor-grab active:cursor-grabbing",
+                isDragging && "opacity-40",
+                isDropTarget && "ring-1 ring-[#5865f2]",
                 !isActive && "hover:bg-hover-bg/40",
                 isActive ? "bg-hover-bg text-primary-text" : (hasUnread ? "text-primary-text font-bold" : "text-muted-text hover:text-primary-text")
             )}
