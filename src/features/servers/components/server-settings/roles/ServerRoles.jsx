@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { RolesList } from "./RolesList";
 import { EditRoleContent } from "./EditRoleContent";
-import { useRoles } from "@/features/servers/composables/roles";
+import { useRoles } from "@/features/servers/hooks/useRoles";
 import { UnsavedChangesBar } from "../UnsavedChangesBar";
 
-export const ServerRoles = () => {
+export const ServerRoles = ({ serverName }) => {
   const [editingRoleId, setEditingRoleId] = useState(null);
   const [draftRole, setDraftRole] = useState(null);
-  const { roles, getRole, createRole, updateRole, deleteRole, STANDARD_COLORS } = useRoles();
+  const { roles, getRole, createRole, updateRole, deleteRole, STANDARD_COLORS } = useRoles(serverName);
 
   // Load draftRole when starting to edit
   useEffect(() => {
@@ -45,7 +45,7 @@ export const ServerRoles = () => {
   const hasChanges = draftRole && originalRole && JSON.stringify(draftRole) !== JSON.stringify(originalRole);
 
   return (
-    <div className="w-full text-gray-200 min-h-screen relative">
+    <div className="w-full text-primary-text min-h-screen relative">
       {!editingRoleId ? (
         <RolesList 
           roles={roles} 

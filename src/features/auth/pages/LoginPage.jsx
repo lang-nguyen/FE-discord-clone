@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Input } from '@/shared/components/Input.jsx';
-import { Button } from '@/shared/components/Button.jsx';
+import { Input } from "@/shared/components/ui/Input";
+import { Button } from "@/shared/components/ui/Button";
 import { authApi } from '@/features/auth/api/auth.api';
 import { clearAuthError, loginThunk } from '@/store/slices/authSlice';
 import { PasswordInput } from '@/features/users/components/PasswordInput';

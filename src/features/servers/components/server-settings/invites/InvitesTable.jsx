@@ -36,7 +36,7 @@ export const InvitesTable = ({ invites, onRevoke }) => {
     <div className="mt-8 flex flex-col">
       {/* Header */}
       {invites.length > 0 && (
-        <div className="grid grid-cols-[220px_1fr_80px_180px_1fr] items-center py-2 border-b border-[#3b3d44] text-[12px] font-bold text-gray-400 uppercase tracking-wide">
+        <div className="grid grid-cols-[220px_1fr_80px_180px_1fr] items-center py-2 border-b border-black/10 text-[12px] font-bold text-muted-text uppercase tracking-wide">
           <div>Inviter</div>
           <div>Invite Code</div>
           <div>Uses</div>
@@ -57,36 +57,36 @@ export const InvitesTable = ({ invites, onRevoke }) => {
             <path d="M150 20H170V25H150V20Z" fill="#2b2d31"/>
             <path d="M180 80H200V85H180V80Z" fill="#2b2d31"/>
           </svg>
-          <h3 className="text-gray-400 font-bold text-[16px] uppercase tracking-wide mb-2">
+          <h3 className="text-muted-text font-bold text-[16px] uppercase tracking-wide mb-2">
             No Invites Yet
           </h3>
-          <p className="text-gray-400 text-[15px] text-center max-w-[420px] leading-relaxed">
+          <p className="text-muted-text text-[15px] text-center max-w-[420px] leading-relaxed">
             Feeling aimless? Like a paper plane drifting through the skies? Get some friends in here by creating an invite link!
           </p>
         </div>
       ) : (
         <div className="flex flex-col">
           {invites.map(invite => (
-            <div key={invite.id} className="grid grid-cols-[220px_1fr_80px_180px_1fr] items-center py-4 border-b border-[#3b3d44]/50 hover:bg-[#35373c]/30 transition-colors group relative">
+            <div key={invite.id} className="grid grid-cols-[220px_1fr_80px_180px_1fr] items-center py-4 border-b border-black/10/50 hover:bg-hover-bg/30 transition-colors group relative">
               <div className="flex items-center gap-3">
                 <Avatar className="w-8 h-8">
                   <AvatarImage src={invite.inviter.avatar} alt={invite.inviter.name} />
                 </Avatar>
                 <div className="flex flex-col">
-                  <span className="text-[15px] font-medium text-gray-200">{invite.inviter.name}</span>
-                  <span className="text-[13px] text-gray-400 leading-tight">#{invite.channel}</span>
+                  <span className="text-[15px] font-medium text-primary-text">{invite.inviter.name}</span>
+                  <span className="text-[13px] text-muted-text leading-tight">#{invite.channel}</span>
                 </div>
               </div>
-              <div className="text-[15px] text-gray-300 font-mono tracking-wide">{invite.code}</div>
-              <div className="text-[15px] text-gray-300">{invite.uses}</div>
-              <div className="text-[15px] text-gray-300 font-mono tracking-wide">
+              <div className="text-[15px] text-primary-text/80 font-mono tracking-wide">{invite.code}</div>
+              <div className="text-[15px] text-primary-text/80">{invite.uses}</div>
+              <div className="text-[15px] text-primary-text/80 font-mono tracking-wide">
                 <CountdownTimer expiresAt={invite.expiresAt} />
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-[15px] text-gray-300">{invite.roles.length > 0 ? invite.roles.join(", ") : ""}</span>
+                <span className="text-[15px] text-primary-text/80">{invite.roles.length > 0 ? invite.roles.join(", ") : ""}</span>
                 <button 
                   onClick={() => onRevoke(invite.id)}
-                  className="p-2 opacity-0 group-hover:opacity-100 hover:text-[#da373c] text-gray-400 transition-all rounded-full hover:bg-[#da373c]/10 absolute right-2"
+                  className="p-2 opacity-0 group-hover:opacity-100 hover:text-[#da373c] text-muted-text transition-all rounded-full hover:bg-[#da373c]/10 absolute right-2"
                   title="Revoke Invite"
                 >
                   <X className="w-5 h-5" />

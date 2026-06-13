@@ -22,18 +22,18 @@ const ChannelIcon = ({ type, isActive, hasUnread, isPrivate }) => {
             <Icon
                 className={cn(
                     "flex-shrink-0 w-5 h-5",
-                    isActive ? "text-[#F2F3F5]" : (hasUnread ? "text-white" : "text-gray-400 group-hover:text-gray-200")
+                    isActive ? "text-primary-text" : (hasUnread ? "text-primary-text" : "text-muted-text group-hover:text-primary-text")
                 )}
             />
             {isPrivate && (
                 <div className={cn(
                     "absolute -right-0.5 -top-0.5 rounded-sm p-[1px]",
-                    isActive ? "bg-[#3F4147]" : "bg-[#2B2D31] group-hover:bg-[#35373C]"
+                    isActive ? "bg-hover-bg" : "bg-nav-sidebar-bg group-hover:bg-hover-bg"
                 )}>
                     <Lock 
                         className={cn(
                             "w-2.5 h-2.5 fill-current",
-                            isActive ? "text-[#F2F3F5]" : (hasUnread ? "text-white" : "text-gray-400 group-hover:text-gray-200")
+                            isActive ? "text-primary-text" : (hasUnread ? "text-primary-text" : "text-muted-text group-hover:text-primary-text")
                         )} 
                         strokeWidth={2}
                     />
@@ -47,12 +47,12 @@ const ChannelIcon = ({ type, isActive, hasUnread, isPrivate }) => {
 const UserLimit = ({ type, userLimit, present = 0 }) => {
     if (type !== 'voice' || userLimit <= 0) return null;
     return (
-        <div className="flex items-center text-xs font-semibold group-hover:hidden text-gray-400 flex-shrink-0">
+        <div className="flex items-center text-xs font-semibold group-hover:hidden text-muted-text flex-shrink-0">
             <div className="flex items-center ml-1 text-[10px] font-bold rounded overflow-hidden">
-                <span className="px-1.5 py-[2px] bg-[#2B2D31] text-gray-300">
+                <span className="px-1.5 py-[2px] bg-nav-sidebar-bg text-muted-text">
                     {String(present).padStart(2, '0')}
                 </span>
-                <span className="px-1.5 py-[2px] bg-[#35373C] text-gray-400">
+                <span className="px-1.5 py-[2px] bg-hover-bg text-muted-text">
                     {String(userLimit).padStart(2, '0')}
                 </span>
             </div>
@@ -77,7 +77,7 @@ const ChannelActions = ({
                             e.stopPropagation();
                             onOpenChat?.();
                         }}
-                        className="text-gray-400 hover:text-gray-200 transition-colors"
+                        className="text-muted-text hover:text-primary-text transition-colors"
                     >
                         <MessageSquare className="w-4 h-4" />
                     </button>
@@ -90,7 +90,7 @@ const ChannelActions = ({
                         e.stopPropagation();
                         onInviteToVoice?.();
                     }}
-                    className="text-gray-400 hover:text-gray-200 transition-colors"
+                    className="text-muted-text hover:text-primary-text transition-colors"
                 >
                     <UserPlus className="w-4 h-4" />
                 </button>
@@ -102,7 +102,7 @@ const ChannelActions = ({
                         e.stopPropagation();
                         onEditChannel?.();
                     }}
-                    className="text-gray-400 hover:text-gray-200 transition-colors"
+                    className="text-muted-text hover:text-primary-text transition-colors"
                 >
                     <Settings className="w-4 h-4" />
                 </button>
@@ -128,8 +128,8 @@ const ChannelItem = ({
         <div
             className={cn(
                 "group relative flex items-center justify-between px-2 py-1.5 mx-2 rounded-md transition-colors",
-                !isActive && "hover:bg-[#35373C]",
-                isActive ? "bg-[#3F4147] text-[#F2F3F5]" : (hasUnread ? "text-white font-bold" : "text-gray-400 hover:text-gray-200")
+                !isActive && "hover:bg-hover-bg/40",
+                isActive ? "bg-hover-bg text-primary-text" : (hasUnread ? "text-primary-text font-bold" : "text-muted-text hover:text-primary-text")
             )}
         >
             <button

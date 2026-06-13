@@ -16,15 +16,15 @@ const UserPanel = ({
 }) => {
     return (
         // THẺ CHỨA NGOÀI CÙNG (Container)
-        <div className="flex items-center justify-between w-full h-[52px] px-2 py-1.5 bg-[#232428] shrink-0">
+        <div className="flex items-center justify-between w-full h-[52px] px-2 py-1.5 bg-user-panel-bg shrink-0">
 
             {/* KHỐI BÊN TRÁI: Avatar + Tên User */}
             <div
-                className="flex items-center min-w-0 flex-1 h-full px-1 py-1 -ml-1 rounded-md hover:bg-white/10 transition-colors cursor-pointer mr-1"
+                className="flex items-center min-w-0 flex-1 h-full px-1 py-1 -ml-1 rounded-md hover:bg-hover-bg transition-colors cursor-pointer mr-1"
                 onClick={onClickProfile}
             >
                 {/* Avatar kèm Trạng thái Online - Dùng CSS ghi đè component gốc*/}
-                <div className="shrink-0 mr-3 [&_.absolute]:!-bottom-[2px] [&_.absolute]:!-right-[2px] [&_.absolute]:!w-3.5 [&_.absolute]:!h-3.5 [&_.absolute]:!border-[3px] [&_.absolute]:!border-[#232428]">
+                <div className="shrink-0 mr-3 [&_.absolute]:!-bottom-[2px] [&_.absolute]:!-right-[2px] [&_.absolute]:!w-3.5 [&_.absolute]:!h-3.5 [&_.absolute]:!border-[3px] [&_.absolute]:!border-[var(--user-panel-bg)]">
                     <Avatar className="w-8 h-8" status={user?.onlineStatus || "online"}>
                         <AvatarImage src={user?.avatarUrl} alt={user?.username} />
                         <AvatarFallback>{user?.username?.charAt(0)?.toUpperCase() || 'U'}</AvatarFallback>
@@ -33,10 +33,10 @@ const UserPanel = ({
 
                 {/* Tên và Text phụ */}
                 <div className="flex flex-col min-w-0 flex-1 leading-tight">
-                    <span className="text-white text-sm font-semibold truncate">
+                    <span className="text-primary-text text-sm font-semibold truncate">
                         {user?.username || 'Unknown User'}
                     </span>
-                    <span className="text-white/60 text-xs truncate">
+                    <span className="text-muted-text text-xs truncate">
                         {user?.statusText || 'Trực tuyến'}
                     </span>
                 </div>
@@ -53,13 +53,13 @@ const UserPanel = ({
                                 variant="ghost"
                                 size="icon"
                                 onClick={onToggleMute}
-                                className="w-8 h-8 rounded-md hover:bg-white/10 text-white/70 hover:text-white shrink-0"
+                                className="w-8 h-8 rounded-md hover:bg-hover-bg text-muted-text hover:text-primary-text shrink-0"
                             >
                                 {/* Dùng toán tử 3 ngôi: Nếu isMuted=true thì render con Mic gạch chéo màu đỏ, ngược lại render con Mic bình thường */}
                                 {isMuted ? <MicOff className="w-5 h-5 text-red-500" /> : <Mic className="w-5 h-5" />}
                             </Button>
                         </TooltipTrigger>
-                        <TooltipContent side="top" sideOffset={8} className="bg-black text-white px-3 py-1.5 rounded-sm">
+                        <TooltipContent side="top" sideOffset={8}>
                             <p className="font-semibold text-sm">{isMuted ? "Bật tham gia thoại" : "Tắt tiếng"}</p>
                         </TooltipContent>
                     </Tooltip>
@@ -73,13 +73,13 @@ const UserPanel = ({
                                 variant="ghost"
                                 size="icon"
                                 onClick={onToggleDeafen}
-                                className="w-8 h-8 rounded-md hover:bg-white/10 text-white/70 hover:text-white shrink-0"
+                                className="w-8 h-8 rounded-md hover:bg-hover-bg text-muted-text hover:text-primary-text shrink-0"
                             >
                                 {/* Deafen (Tắt âm) */}
                                 {isDeafened ? <HeadphoneOff className="w-5 h-5 text-red-500" /> : <Headphones className="w-5 h-5" />}
                             </Button>
                         </TooltipTrigger>
-                        <TooltipContent side="top" sideOffset={8} className="bg-black text-white px-3 py-1.5 rounded-sm">
+                        <TooltipContent side="top" sideOffset={8}>
                             <p className="font-semibold text-sm">{isDeafened ? "Bật âm thanh" : "Tắt âm thanh"}</p>
                         </TooltipContent>
                     </Tooltip>
@@ -93,12 +93,12 @@ const UserPanel = ({
                                 variant="ghost"
                                 size="icon"
                                 onClick={onClickSettings}
-                                className="w-8 h-8 rounded-md hover:bg-white/10 text-white/70 hover:text-white shrink-0"
+                                className="w-8 h-8 rounded-md hover:bg-hover-bg text-muted-text hover:text-primary-text shrink-0"
                             >
                                 <Settings className="w-5 h-5" />
                             </Button>
                         </TooltipTrigger>
-                        <TooltipContent side="top" sideOffset={8} className="bg-black text-white px-3 py-1.5 rounded-sm">
+                        <TooltipContent side="top" sideOffset={8}>
                             <p className="font-semibold text-sm">Cài đặt người dùng</p>
                         </TooltipContent>
                     </Tooltip>

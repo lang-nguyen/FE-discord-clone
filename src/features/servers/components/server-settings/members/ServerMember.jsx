@@ -1,6 +1,6 @@
 import React from "react";
-import { useMembers } from "../../../composables/members";
-import { useRoles } from "../../../composables/roles";
+import { useMembers } from "@/features/servers/hooks/useMembers";
+import { useRoles } from "@/features/servers/hooks/useRoles";
 import { MembersHeader } from "./MembersHeader";
 import { MembersTable } from "./MembersTable";
 import { BanMemberDialog } from "./BanMemberDialog";
@@ -12,10 +12,8 @@ import { KickMemberDialog } from "./KickMemberDialog";
 import { TransferOwnershipDialog } from "./TransferOwnershipDialog";
 
 export const ServerMembers = ({ serverName }) => {
-  console.log("Rendering ServerMembers for:", serverName);
-  
   const membersLogic = useMembers({ serverName });
-  const { roles } = useRoles();
+  const { roles } = useRoles(serverName);
 
   return (
     <div className="flex-1 min-w-0">
@@ -102,7 +100,7 @@ export const ServerMembers = ({ serverName }) => {
       />
 
       {membersLogic.toastMessage && (
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 bg-[#232428] border border-[#1e1f22] text-white px-4 py-3 rounded-[4px] shadow-lg flex items-center gap-3 z-[100] animate-in fade-in slide-in-from-top-4 duration-300">
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 bg-user-panel-bg border border-server-sidebar-bg text-primary-text px-4 py-3 rounded-[4px] shadow-lg flex items-center gap-3 z-[100] animate-in fade-in slide-in-from-top-4 duration-300">
           <div className="w-5 h-5 rounded-full bg-[#23a559] flex items-center justify-center">
             <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
           </div>

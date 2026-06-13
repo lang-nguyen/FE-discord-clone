@@ -1,14 +1,10 @@
-import { KeyRound, LogOut, Save, User } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/shared/components/ui/Dialog";
+import { KeyRound, LogOut, Save, User, Paintbrush } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/shared/components/ui/Dialog";
 import { Input } from "@/shared/components/ui/Input";
 import { Button } from "@/shared/components/ui/Button";
 import { PasswordInput } from "@/features/users/components/PasswordInput";
-import { useUserSettingsModal } from "@/features/users/composables/user-settings-modal";
+import { useUserSettingsModal } from "@/features/users/hooks/useUserSettingsModal";
+import { useTheme } from "@/shared/theme/ThemeProvider";
 
 export function UserSettingsModal({ open, onOpenChange }) {
   const {
@@ -33,15 +29,17 @@ export function UserSettingsModal({ open, onOpenChange }) {
     visiblePasswords,
   } = useUserSettingsModal({ open, onOpenChange });
 
+  const { theme: activeTheme, themes, setTheme } = useTheme();
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl border-none bg-[#313338] p-0 text-gray-100">
+      <DialogContent className="max-w-2xl border-none bg-chat-bg p-0 text-primary-text">
         <DialogHeader className="border-b border-black/20 px-6 py-4">
           <DialogTitle>User Settings</DialogTitle>
         </DialogHeader>
 
         <div className="grid gap-0 sm:grid-cols-[180px_1fr]">
-          <aside className="border-r border-black/20 bg-[#2B2D31] p-3">
+          <aside className="border-r border-black/10 bg-nav-sidebar-bg p-3">
             <button
               type="button"
               onClick={() => setActiveSection("profile")}
@@ -60,6 +58,14 @@ export function UserSettingsModal({ open, onOpenChange }) {
             </button>
             <button
               type="button"
+              onClick={() => setActiveSection("appearance")}
+              className={navItemClass("appearance")}
+            >
+              <Paintbrush className="h-4 w-4" />
+              Appearance
+            </button>
+            <button
+              type="button"
               onClick={handleLogout}
               className="mt-2 flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-red-300 hover:bg-red-500/10"
             >
@@ -68,7 +74,7 @@ export function UserSettingsModal({ open, onOpenChange }) {
             </button>
           </aside>
 
-          {activeSection === "profile" ? (
+          {activeSection === "profile" && (
             <form onSubmit={handleSubmit} className="space-y-4 p-6">
               <Input
                 label="Display Name"
@@ -78,11 +84,11 @@ export function UserSettingsModal({ open, onOpenChange }) {
               />
 
               <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-wide text-gray-300">
+                <label className="text-xs font-bold uppercase tracking-wide text-muted-text">
                   Bio
                 </label>
                 <textarea
-                  className="min-h-[88px] w-full resize-none rounded-md border border-transparent bg-[#202225] px-3 py-2 text-sm text-gray-200 placeholder:text-gray-500 focus-visible:border-[#5865f2] focus-visible:outline-none"
+                  className="min-h-[88px] w-full resize-none rounded-md border border-transparent bg-input-bg px-3 py-2 text-sm text-primary-text placeholder:text-muted-text focus-visible:border-[#5865f2] focus-visible:outline-none"
                   value={form.bio}
                   maxLength={2000}
                   onChange={(event) => updateField("bio", event.target.value)}
@@ -90,28 +96,30 @@ export function UserSettingsModal({ open, onOpenChange }) {
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-wide text-gray-300">
+                <label className="text-xs font-bold uppercase tracking-wide text-muted-text">
                   Upload Avatar
                 </label>
                 <input
                   type="file"
                   accept="image/png,image/jpeg,image/webp,image/gif"
                   onChange={(event) => updateAvatarFile(event.target.files?.[0] ?? null)}
-                  className="block w-full text-sm text-gray-300 file:mr-3 file:rounded-md file:border-0 file:bg-[#5865F2] file:px-3 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-[#4752C4]"
+                  className="block w-full text-sm text-muted-text file:mr-3 file:rounded-md file:border-0 file:bg-[#5865F2] file:px-3 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-[#4752C4]"
                 />
                 {(avatarFile || avatarUploadMessage) && (
-                  <p className={`text-xs ${avatarUploadMessage.includes("Unable") ? "text-red-300" : "text-gray-400"}`}>
+                  <p
+                    className={`text-xs ${avatarUploadMessage.includes("Unable") ? "text-red-300" : "text-muted-text"}`}
+                  >
                     {avatarUploadMessage || avatarFile?.name}
                   </p>
                 )}
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-wide text-gray-300">
+                <label className="text-xs font-bold uppercase tracking-wide text-muted-text">
                   Note
                 </label>
                 <textarea
-                  className="min-h-[72px] w-full resize-none rounded-md border border-transparent bg-[#202225] px-3 py-2 text-sm text-gray-200 placeholder:text-gray-500 focus-visible:border-[#5865f2] focus-visible:outline-none"
+                  className="min-h-[72px] w-full resize-none rounded-md border border-transparent bg-input-bg px-3 py-2 text-sm text-primary-text placeholder:text-muted-text focus-visible:border-[#5865f2] focus-visible:outline-none"
                   value={form.note}
                   maxLength={1000}
                   onChange={(event) => updateField("note", event.target.value)}
@@ -134,7 +142,9 @@ export function UserSettingsModal({ open, onOpenChange }) {
                 </Button>
               </div>
             </form>
-          ) : (
+          )}
+
+          {activeSection === "password" && (
             <form onSubmit={handleChangePassword} className="space-y-4 p-6">
               <PasswordInput
                 label="Current Password"
@@ -164,7 +174,9 @@ export function UserSettingsModal({ open, onOpenChange }) {
               />
 
               {passwordMessage && (
-                <p className={`text-sm ${passwordMessage.includes("successfully") ? "text-green-300" : "text-red-300"}`}>
+                <p
+                  className={`text-sm ${passwordMessage.includes("successfully") ? "text-green-300" : "text-red-300"}`}
+                >
                   {passwordMessage}
                 </p>
               )}
@@ -176,6 +188,31 @@ export function UserSettingsModal({ open, onOpenChange }) {
                 </Button>
               </div>
             </form>
+          )}
+
+          {activeSection === "appearance" && (
+            <div className="space-y-4 p-6">
+              <div className="space-y-4">
+                <h3 className="text-xs font-bold text-muted-text uppercase tracking-wider mb-4">
+                  Choose App Theme
+                </h3>
+                <div className="grid grid-cols-2 gap-3">
+                  {themes.map((t) => (
+                    <button
+                      key={t.key}
+                      onClick={() => setTheme(t.key)}
+                      className={`px-3 py-3 rounded-lg text-xs font-bold transition-all truncate border border-transparent ${
+                        activeTheme === t.key
+                          ? "bg-[#5865F2] text-white shadow-md border-white/20"
+                          : "bg-input-bg text-muted-text hover:text-primary-text hover:bg-hover-bg"
+                      }`}
+                    >
+                      {t.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
           )}
         </div>
       </DialogContent>

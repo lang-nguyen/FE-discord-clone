@@ -3,10 +3,10 @@ import { Button } from "@/shared/components/ui/Button";
 export const ServerIconSection = ({ onOpenIconPicker, onRemoveIcon }) => {
   return (
     <div className="mb-6">
-      <h3 className="text-xs font-bold uppercase tracking-wide text-gray-300 mb-1">
+      <h3 className="text-xs font-bold uppercase tracking-wide text-muted-text mb-1">
         Icon
       </h3>
-      <p className="text-xs text-gray-500 mb-3">
+      <p className="text-xs text-muted-text/70 mb-3">
         We recommend an image of at least 512x512.
       </p>
 

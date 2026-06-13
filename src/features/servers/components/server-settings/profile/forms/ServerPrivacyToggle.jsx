@@ -7,7 +7,7 @@ export const ServerPrivacyToggle = ({ isPrivate, onChange }) => {
         {/* Left info + toggle */}
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-1">
-            <h3 id="privacy-toggle-label" className="text-sm font-semibold text-gray-200">
+            <h3 id="privacy-toggle-label" className="text-sm font-semibold text-primary-text">
               Private Profile
             </h3>
             {/* Toggle */}
@@ -16,8 +16,8 @@ export const ServerPrivacyToggle = ({ isPrivate, onChange }) => {
               aria-checked={isPrivate}
               aria-labelledby="privacy-toggle-label"
               onClick={() => onChange(!isPrivate)}
-              className={`relative w-10 h-6 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${
-                isPrivate ? "bg-[#5865f2]" : "bg-[#72767d]"
+              className={`relative w-10 h-6 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5865f2] ${
+                isPrivate ? "bg-[#5865f2]" : "bg-muted-text/40"
               }`}
             >
               <span
@@ -27,9 +27,9 @@ export const ServerPrivacyToggle = ({ isPrivate, onChange }) => {
               />
             </button>
           </div>
-          <p className="text-xs text-gray-400 leading-relaxed max-w-[260px]">
+          <p className="text-xs text-muted-text leading-relaxed max-w-[260px]">
             When enabled, only server members can view profile content.
-            Non-members won't be able to see this content unless they have
+            Non-members won&apos;t be able to see this content unless they have
             an invite.
           </p>
         </div>

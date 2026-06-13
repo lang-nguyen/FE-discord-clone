@@ -56,7 +56,7 @@ export const BanMemberDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[440px] bg-[#313338] text-gray-200 border-none p-0 overflow-visible gap-0 rounded-[8px] shadow-2xl">
+      <DialogContent className="sm:max-w-[440px] bg-chat-bg text-primary-text border-none p-0 overflow-visible gap-0 rounded-[8px] shadow-2xl">
         {/* Default Radix Close button will appear at top right automatically */}
         <DialogHeader className="p-4 pb-0 items-start text-left">
           <DialogTitle className="text-xl font-bold text-white pr-6">
@@ -84,7 +84,7 @@ export const BanMemberDialog = ({
                         : 'border border-gray-500 group-hover:border-gray-400 bg-transparent'
                     }`}
                   />
-                  <span className="text-[15px] text-gray-200 leading-none">{r.label}</span>
+                  <span className="text-[15px] text-primary-text leading-none">{r.label}</span>
                 </label>
               ))}
             </div>
@@ -96,21 +96,21 @@ export const BanMemberDialog = ({
               Delete Message History
             </label>
             <div 
-              className={`w-full bg-[#1e1f22] text-gray-200 p-2.5 text-[15px] rounded flex items-center justify-between cursor-pointer border hover:bg-[#111214] transition-colors ${isDropdownOpen ? 'border-indigo-400' : 'border-transparent'}`}
+              className={`w-full bg-server-sidebar-bg text-primary-text p-2.5 text-[15px] rounded flex items-center justify-between cursor-pointer border hover:bg-server-sidebar-bg transition-colors ${isDropdownOpen ? 'border-indigo-400' : 'border-transparent'}`}
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             >
               <span>{currentDeleteOption?.label}</span>
-              {isDropdownOpen ? <ChevronUp className="w-5 h-5 text-gray-400" /> : <ChevronDown className="w-5 h-5 text-gray-400" />}
+              {isDropdownOpen ? <ChevronUp className="w-5 h-5 text-muted-text" /> : <ChevronDown className="w-5 h-5 text-muted-text" />}
             </div>
 
             {/* Danh sách options dropdown */}
             {isDropdownOpen && (
-              <div className="absolute top-[100%] left-0 w-full mt-1 bg-[#2b2d31] rounded-lg shadow-xl border border-[#1e1f22] overflow-hidden z-50">
+              <div className="absolute top-[100%] left-0 w-full mt-1 bg-nav-sidebar-bg rounded-lg shadow-xl border border-[#1e1f22] overflow-hidden z-50">
                 <div className="max-h-[220px] overflow-y-auto py-1 custom-scrollbar">
                   {DELETE_OPTIONS.map((opt) => (
                     <div 
                       key={opt.id}
-                      className={`px-3 py-2 mx-1 rounded-[4px] flex items-center justify-between cursor-pointer text-[15px] ${deleteHistory === opt.id ? 'bg-[#404249] text-white' : 'text-gray-300 hover:bg-[#35373c] hover:text-white'}`}
+                      className={`px-3 py-2 mx-1 rounded-[4px] flex items-center justify-between cursor-pointer text-[15px] ${deleteHistory === opt.id ? 'bg-hover-bg text-white' : 'text-primary-text/80 hover:bg-hover-bg hover:text-white'}`}
                       onClick={() => {
                         setDeleteHistory(opt.id);
                         setIsDropdownOpen(false);

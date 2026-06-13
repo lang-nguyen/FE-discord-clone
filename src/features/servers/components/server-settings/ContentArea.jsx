@@ -12,14 +12,14 @@ const TAB_COMPONENTS = {
   "bans": ServerBans,
 };
 
-export const ContentArea = ({ activeTab, profileData, onUpdateField }) => {
+export const ContentArea = ({ activeTab, serverId, profileData, onUpdateField }) => {
   const Component = TAB_COMPONENTS[activeTab];
 
   if (!Component) {
     return (
       <div className="flex flex-col items-center justify-center h-[400px] text-center">
-        <h2 className="text-xl font-bold text-white mb-2">Coming Soon</h2>
-        <p className="text-[#a3a6aa]">This settings page is not yet implemented.</p>
+        <h2 className="text-xl font-bold text-primary-text mb-2">Coming Soon</h2>
+        <p className="text-muted-text">This settings page is not yet implemented.</p>
       </div>
     );
   }
@@ -28,8 +28,8 @@ export const ContentArea = ({ activeTab, profileData, onUpdateField }) => {
     return <Component data={profileData} onUpdateField={onUpdateField} />;
   }
 
-  if (activeTab === "members" || activeTab === "bans") {
-    return <Component serverName={profileData.serverName} />;
+  if (["members", "roles", "invites", "bans"].includes(activeTab)) {
+    return <Component serverName={serverId} />;
   }
 
   return <Component />;

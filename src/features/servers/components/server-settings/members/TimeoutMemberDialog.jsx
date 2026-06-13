@@ -26,7 +26,7 @@ export const TimeoutMemberDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[460px] bg-[#313338] text-gray-200 border-none p-0 overflow-hidden gap-0 rounded-[8px] shadow-2xl">
+      <DialogContent className="sm:max-w-[460px] bg-chat-bg text-primary-text border-none p-0 overflow-hidden gap-0 rounded-[8px] shadow-2xl">
         <DialogHeader className="p-4 pb-0 items-start text-left flex flex-row justify-between w-full">
           <DialogTitle className="text-[20px] font-bold text-white mb-2">
             {isRemoving ? "Remove Timeout" : `Timeout ${targetMember.username}`}
@@ -36,24 +36,24 @@ export const TimeoutMemberDialog = ({
         <div className="p-4 pt-2 space-y-6">
           {isRemoving ? (
             <>
-              <p className="text-[15px] text-gray-300 leading-snug">
+              <p className="text-[15px] text-primary-text/80 leading-snug">
                 {targetMember.username} has <span className="font-bold text-white">00h 00m 45s</span> remaining in timeout.
               </p>
-              <p className="text-[15px] text-gray-300 leading-snug">
+              <p className="text-[15px] text-primary-text/80 leading-snug">
                 Remove it now to let them post and react to messages, and join voice and stage channels.{" "}
                 <a href="#" className="text-[#00a8fc] hover:underline">Learn More</a>
               </p>
             </>
           ) : (
             <>
-              <p className="text-[14px] text-gray-300 leading-snug">
+              <p className="text-[14px] text-primary-text/80 leading-snug">
                 Members who are in timeout are temporarily not allowed to chat or react in text channels. They are also not allowed to connect to voice or Stage channels.{" "}
                 <a href="#" className="text-[#00a8fc] hover:underline">Learn more.</a>
               </p>
 
               <div className="space-y-2">
                 <label className="text-xs font-bold text-white tracking-wide">Duration</label>
-                <div className="flex bg-[#1e1f22] rounded-[4px] overflow-hidden border border-[#1e1f22]">
+                <div className="flex bg-server-sidebar-bg rounded-[4px] overflow-hidden border border-[#1e1f22]">
                   {DURATIONS.map((dur, index) => (
                     <button
                       key={dur.value}
@@ -61,7 +61,7 @@ export const TimeoutMemberDialog = ({
                       className={`flex-1 py-2 text-[13px] font-medium transition-colors ${
                         duration === dur.value 
                           ? "bg-[#5865F2] text-white" 
-                          : "bg-transparent text-gray-300 hover:bg-[#35373c] hover:text-white"
+                          : "bg-transparent text-primary-text/80 hover:bg-hover-bg hover:text-white"
                       } ${index !== 0 ? "border-l border-[#2b2d31]" : ""}`}
                     >
                       {dur.label}
@@ -76,14 +76,14 @@ export const TimeoutMemberDialog = ({
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
                   placeholder="Enter a reason. This will only be visible in the Audit Log and will not be shown to the member."
-                  className="w-full bg-[#1e1f22] border border-[#1e1f22] text-[15px] text-gray-200 rounded-[4px] p-3 h-[80px] resize-none focus:outline-none focus:border-black/50 font-medium placeholder:text-gray-500 leading-snug"
+                  className="w-full bg-server-sidebar-bg border border-[#1e1f22] text-[15px] text-primary-text rounded-[4px] p-3 h-[80px] resize-none focus:outline-none focus:border-black/50 font-medium placeholder:text-muted-text/70 leading-snug"
                 />
               </div>
             </>
           )}
         </div>
 
-        <div className="p-4 flex gap-3 mt-2 bg-[#2b2d31]">
+        <div className="p-4 flex gap-3 mt-2 bg-nav-sidebar-bg">
           <Button 
             variant="ghost" 
             onClick={() => onOpenChange(false)} 
@@ -95,7 +95,7 @@ export const TimeoutMemberDialog = ({
             variant="primary" 
             onClick={() => onConfirm(duration, reason)} 
             className={`flex-[1.5] text-white h-[40px] rounded-[4px] font-medium transition-colors ${
-              isRemoving ? "bg-[#da373c] hover:bg-[#a12828]" : "bg-[#5865F2] hover:bg-[#4752c4]"
+              isRemoving ? "bg-[#da373c] hover:bg-[#a12828]" : "bg-[#5865F2] hover:bg-hover-bg"
             }`}
           >
             {isRemoving ? "Remove Timeout" : "Timeout"}

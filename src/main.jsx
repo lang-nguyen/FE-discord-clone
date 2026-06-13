@@ -1,18 +1,13 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import { Provider } from 'react-redux';
-import { BrowserRouter } from 'react-router-dom';
-import App from './App.jsx';
-import store from './store/store.js';
-import { SocketProvider } from './shared/providers/SocketProvider.jsx';
-import './index.css';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "@/app/App";
+import { AppProviders } from "@/app/providers/AppProviders";
+import "@/index.css";
 
-ReactDOM.createRoot(document.getElementById('root')).render(
-    <Provider store={store}>
-        <BrowserRouter>
-            <SocketProvider>
-                <App />
-            </SocketProvider>
-        </BrowserRouter>
-    </Provider>
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <AppProviders>
+      <App />
+    </AppProviders>
+  </React.StrictMode>
 );

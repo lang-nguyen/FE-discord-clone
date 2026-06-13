@@ -21,23 +21,23 @@ export const EditRoleContent = ({ role, roles, onUpdate, onBack, onChangeActiveR
 
       {/* 2. Nội dung bên phải */}
       <div className="flex-1 pb-32">
-        <div className="sticky top-[-60px] bg-[#313338] z-20 -mx-4 px-4 pt-[60px] border-b border-transparent">
+        <div className="sticky top-[-60px] bg-chat-bg z-20 -mx-4 px-4 pt-[60px] border-b border-transparent">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-[16px] font-bold text-white uppercase tracking-wide">
               Edit Role — {role.name}
             </h2>
-            <button className="w-8 h-8 rounded-full hover:bg-[#35373c] flex items-center justify-center text-gray-300">
+            <button className="w-8 h-8 rounded-full hover:bg-hover-bg flex items-center justify-center text-primary-text/80">
               <MoreHorizontal className="w-5 h-5" />
             </button>
           </div>
 
           {/* Tabs Điều hướng */}
-          <div className="flex items-center gap-6 border-b border-[#3b3d44] mb-8">
+          <div className="flex items-center gap-6 border-b border-black/10 mb-8">
             {tabs.map(t => (
               <button
                 key={t}
                 onClick={() => setActiveTab(t)}
-                className={`py-3 -mb-px text-[15px] font-medium border-b-2 transition-colors ${activeTab.includes(t.split(' ')[0]) ? 'text-white border-[#5865F2]' : 'text-[#a3a6aa] border-transparent hover:text-gray-200 hover:border-gray-500'}`}
+                className={`py-3 -mb-px text-[15px] font-medium border-b-2 transition-colors ${activeTab.includes(t.split(' ')[0]) ? 'text-white border-[#5865F2]' : 'text-muted-text border-transparent hover:text-primary-text hover:border-gray-500'}`}
               >
                 {t}
               </button>
@@ -56,7 +56,7 @@ export const EditRoleContent = ({ role, roles, onUpdate, onBack, onChangeActiveR
 
         {/* Các Tab khác có thể thêm vào đây: Permissions, Links... */}
         {activeTab !== 'Display' && (
-            <div className="flex flex-col items-center justify-center py-20 text-gray-500">
+            <div className="flex flex-col items-center justify-center py-20 text-muted-text/70">
                 <p>Tab {activeTab} is currently under development.</p>
             </div>
         )}

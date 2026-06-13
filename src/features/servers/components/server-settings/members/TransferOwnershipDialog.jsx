@@ -27,7 +27,7 @@ export const TransferOwnershipDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-[#313338] border-none max-w-[480px] p-0 gap-0 rounded-xl">
+      <DialogContent className="bg-chat-bg border-none max-w-[480px] p-0 gap-0 rounded-xl">
         {verificationStep ? (
           <>
 
@@ -38,7 +38,7 @@ export const TransferOwnershipDialog = ({
             </DialogHeader>
 
             <div className="px-6 py-4">
-              <p className="text-sm text-gray-400 leading-relaxed text-center select-none">
+              <p className="text-sm text-muted-text leading-relaxed text-center select-none">
                 Check your email: we've sent you a verification code. Enter it
                 here to verify you're really you.
               </p>
@@ -48,7 +48,7 @@ export const TransferOwnershipDialog = ({
                   label="Verification Code"
                   value={verificationCode}
                   onChange={(e) => onVerificationCodeChange(e.target.value)}
-                  className="bg-[#1e1f22]"
+                  className="bg-server-sidebar-bg"
                 />
               </div>
 
@@ -59,11 +59,11 @@ export const TransferOwnershipDialog = ({
               </p>
             </div>
 
-            <DialogFooter className="px-6 py-4 border-t border-[#3b3d44]/50 !flex !flex-row !justify-end gap-3">
+            <DialogFooter className="px-6 py-4 border-t border-black/10/50 !flex !flex-row !justify-end gap-3">
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-gray-300 hover:text-white hover:bg-[#404249] rounded-md px-6"
+                className="text-primary-text/80 hover:text-white hover:bg-hover-bg rounded-md px-6"
                 onClick={() => onOpenChange(false)}
               >
                 Cancel
@@ -89,7 +89,7 @@ export const TransferOwnershipDialog = ({
             </DialogHeader>
 
             <div className="px-6 py-4">
-              <p className="text-sm text-gray-400 leading-relaxed select-none">
+              <p className="text-sm text-muted-text leading-relaxed select-none">
                 This will transfer ownership of{" "}
                 <span className="font-semibold text-white">{serverName}</span> to{" "}
                 <span className="font-semibold text-white">{targetMember.username}</span>.
@@ -108,9 +108,9 @@ export const TransferOwnershipDialog = ({
                   type="checkbox"
                   checked={acknowledged}
                   onChange={(e) => onAcknowledgedChange(e.target.checked)}
-                  className="mt-0.5 w-5 h-5 rounded bg-[#1e1f22] border-gray-500 accent-[#5865f2] cursor-pointer"
+                  className="mt-0.5 w-5 h-5 rounded bg-server-sidebar-bg border-gray-500 accent-[#5865f2] cursor-pointer"
                 />
-                <span className="text-sm text-gray-300 leading-relaxed">
+                <span className="text-sm text-primary-text/80 leading-relaxed">
                   I acknowledge that by transferring ownership of this server to{" "}
                   <span className="font-semibold text-white">{targetMember.username}</span>,
                   it officially belongs to them.
@@ -118,11 +118,11 @@ export const TransferOwnershipDialog = ({
               </label>
             </div>
 
-            <DialogFooter className="px-6 py-4 border-t border-[#3b3d44]/50 !flex !flex-row !justify-end gap-3">
+            <DialogFooter className="px-6 py-4 border-t border-black/10/50 !flex !flex-row !justify-end gap-3">
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-gray-300 hover:text-white hover:bg-[#404249] rounded-md px-6"
+                className="text-primary-text/80 hover:text-white hover:bg-hover-bg rounded-md px-6"
                 onClick={() => onOpenChange(false)}
               >
                 Cancel

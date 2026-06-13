@@ -14,7 +14,7 @@ export const KickMemberDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[440px] bg-[#313338] text-gray-200 border-none p-0 overflow-hidden gap-0 rounded-[8px] shadow-2xl">
+      <DialogContent className="sm:max-w-[440px] bg-chat-bg text-primary-text border-none p-0 overflow-hidden gap-0 rounded-[8px] shadow-2xl">
         <DialogHeader className="p-4 pb-0 items-start text-left flex flex-row justify-between w-full">
           <DialogTitle className="text-[20px] font-bold text-white mb-2">
             Kick {targetMember.username} from Server
@@ -22,7 +22,7 @@ export const KickMemberDialog = ({
         </DialogHeader>
 
         <div className="p-4 pt-2 space-y-4">
-          <p className="text-[15px] text-gray-300 leading-snug">
+          <p className="text-[15px] text-primary-text/80 leading-snug">
             Are you sure you want to kick <span className="font-bold text-white">@{targetMember.username}</span> from the server? They will be able to rejoin again with a new invite.
           </p>
 
@@ -31,12 +31,12 @@ export const KickMemberDialog = ({
             <textarea
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              className="w-full bg-[#1e1f22] border border-[#1e1f22] text-[15px] text-gray-200 rounded-[4px] p-3 h-[80px] resize-none focus:outline-none focus:border-black/50 font-medium"
+              className="w-full bg-server-sidebar-bg border border-[#1e1f22] text-[15px] text-primary-text rounded-[4px] p-3 h-[80px] resize-none focus:outline-none focus:border-black/50 font-medium"
             />
           </div>
         </div>
 
-        <div className="p-4 flex gap-3 mt-4 bg-[#2b2d31]">
+        <div className="p-4 flex gap-3 mt-4 bg-nav-sidebar-bg">
           <Button 
             variant="ghost" 
             onClick={() => onOpenChange(false)} 

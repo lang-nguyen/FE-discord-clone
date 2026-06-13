@@ -12,17 +12,17 @@ import { Button } from '@/shared/components/ui/Button';
 const ServerHeader = ({ serverName, onClickHeader, onClickInvite }) => {
     return (
         // THẺ CHỨA NGOÀI CÙNG: làm layout (đã thêm sticky và shrink-0 để cố định ở trên cùng)
-        <div className="w-full h-12 flex items-center justify-between px-4 border-b border-[#1F2023] shrink-0 sticky top-0 z-10 bg-[#2B2D31]">
+        <div className="w-full h-12 flex items-center justify-between px-4 border-b border-black/10 shrink-0 sticky top-0 z-10 bg-nav-sidebar-bg">
 
             {/* NÚT BẤM BÊN TRÁI (Tên Server + Mũi tên): Nút Mở Menu */}
             <button
-                className="flex items-center min-w-0 flex-1 h-10 px-2 -ml-2 text-left hover:bg-white/5 transition-colors rounded-md"
+                className="flex items-center min-w-0 flex-1 h-10 px-2 -ml-2 text-left hover:bg-hover-bg transition-colors rounded-md"
                 onClick={onClickHeader}
             >
-                <h1 className="font-semibold text-[15px] text-white truncate mr-1">
+                <h1 className="font-semibold text-[15px] text-primary-text truncate mr-1">
                     {serverName}
                 </h1>
-                <ChevronDown className="w-4 h-4 text-white/80 flex-shrink-0" />
+                <ChevronDown className="w-4 h-4 text-muted-text flex-shrink-0" />
             </button>
 
             {/* NÚT BẤM BÊN PHẢI (Mời bạn bè) */}
@@ -32,13 +32,13 @@ const ServerHeader = ({ serverName, onClickHeader, onClickInvite }) => {
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="w-8 h-8 rounded-md text-white/80 hover:bg-[#35373C] hover:text-white ml-2 [&_svg]:size-5 shrink-0"
+                            className="w-8 h-8 rounded-md text-muted-text hover:bg-hover-bg hover:text-primary-text ml-2 [&_svg]:size-5 shrink-0"
                             onClick={onClickInvite}
                         >
                             <UserPlus />
                         </Button>
                     </TooltipTrigger>
-                    <TooltipContent side="bottom" sideOffset={8} className="bg-black text-white px-3 py-1.5 rounded-sm">
+                    <TooltipContent side="bottom" sideOffset={8}>
                         <p className="font-semibold text-sm">Mời bạn bè</p>
                     </TooltipContent>
                 </Tooltip>

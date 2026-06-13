@@ -55,7 +55,7 @@ export const MemberContextMenu = ({
 
         <DropdownMenuItem className="flex items-center justify-between">
           <span>Copy User ID</span>
-          <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+          <svg className="w-4 h-4 text-muted-text" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H7.5m8.25 8.25H21m-3.375-3.375V3.75" />
           </svg>
         </DropdownMenuItem>

@@ -12,8 +12,8 @@ export const ServerInformation = ({
 }) => {
   return (
     <div className="flex-1 min-w-0 max-w-[520px]">
-      <h2 className="text-xl font-semibold text-gray-200">Server Profile</h2>
-      <p className="text-sm text-gray-400 mt-1 mb-8">
+      <h2 className="text-xl font-semibold text-primary-text">Server Profile</h2>
+      <p className="text-sm text-muted-text mt-1 mb-8">
         Customise how your server appears in invite links and, if enabled, in
         Server Discovery and Announcement Channel messages
       </p>
@@ -23,28 +23,28 @@ export const ServerInformation = ({
         onChange={(value) => onUpdateField("serverName", value)}
       />
 
-      <div className="border-t border-[#3b3d44] my-6" />
+      <div className="border-t border-black/10 my-6" />
 
       <ServerIconSection
         onOpenIconPicker={onOpenIconPicker}
         onRemoveIcon={onRemoveIcon}
       />
 
-      <div className="border-t border-[#3b3d44] my-6" />
+      <div className="border-t border-black/10 my-6" />
 
       <ServerBannerSelector
         selectedBanner={data.selectedBanner}
         onChange={(value) => onUpdateField("selectedBanner", value)}
       />
 
-      <div className="border-t border-[#3b3d44] my-6" />
+      <div className="border-t border-black/10 my-6" />
 
       <ServerDescriptionField
         value={data.description}
         onChange={(value) => onUpdateField("description", value)}
       />
 
-      <div className="border-t border-[#3b3d44] my-6" />
+      <div className="border-t border-black/10 my-6" />
 
       <ServerPrivacyToggle
         isPrivate={data.isPrivate}

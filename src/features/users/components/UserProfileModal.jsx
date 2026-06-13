@@ -14,7 +14,7 @@ import {
   TAB_JOINED_SERVERS,
   TAB_OWNED_SERVERS,
   useUserProfileModal,
-} from "@/features/users/composables/user-profile-modal";
+} from "@/features/users/hooks/useUserProfileModal";
 
 export function UserProfileModal({ open, onOpenChange, user, profile }) {
   const {

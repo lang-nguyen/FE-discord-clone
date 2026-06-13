@@ -7,7 +7,7 @@ import {
   getStoredRefreshToken,
   persistAuthSession,
 } from "@/features/auth/utils/authStorage";
-import { profileApi } from "@/features/users/api/profile.api";
+import { profilesApi } from "@/features/users/api/profilesApi";
 
 const storedAuth = getStoredAuthUser();
 
@@ -18,11 +18,15 @@ const initialState = {
   profile: storedAuth?.profile ?? null,
   status: "idle",
   error: null,
+  profileStatus: "idle",
+  profileError: null,
   bootstrapped: false,
 };
 
 function getErrorMessage(error, fallback) {
-  return error.response?.data?.message || error.response?.data?.Message || error.message || fallback;
+  return (
+    error.response?.data?.message || error.response?.data?.Message || error.message || fallback
+  );
 }
 
 function buildUserFromLoginResponse(response) {
@@ -106,28 +110,27 @@ export const registerThunk = createAsyncThunk(
   }
 );
 
-export const logoutThunk = createAsyncThunk(
-  "auth/logout",
-  async (_, { getState }) => {
-    const refreshToken = getState().auth.refreshToken || getStoredRefreshToken();
+export const logoutThunk = createAsyncThunk("auth/logout", async (_, { getState }) => {
+  const refreshToken = getState().auth.refreshToken || getStoredRefreshToken();
 
-    try {
-      if (refreshToken) {
-        await authApi.logout(refreshToken);
-      }
-    } catch {
-      // Local logout should still complete if the server session is already gone.
-    } finally {
-      clearAuthSession();
+  try {
+    if (refreshToken) {
+      await authApi.logout(refreshToken);
     }
+  } catch {
+    // Local logout should still complete if the server session is already gone.
+  } finally {
+    clearAuthSession();
   }
-);
+});
 
 export const updateProfileThunk = createAsyncThunk(
   "auth/updateProfile",
-  async (payload, { getState, rejectWithValue }) => {
+  async (payload, { dispatch, getState, rejectWithValue }) => {
     try {
-      const profile = await profileApi.updateMe(payload);
+      const profile = await dispatch(
+        profilesApi.endpoints.updateProfile.initiate(payload)
+      ).unwrap();
       const { accessToken, refreshToken, user } = getState().auth;
       persistAuthSession({ accessToken, refreshToken, user, profile });
       return profile;
@@ -143,6 +146,7 @@ const authSlice = createSlice({
   reducers: {
     clearAuthError(state) {
       state.error = null;
+      state.profileError = null;
     },
     clearAuthState(state) {
       state.accessToken = null;
@@ -151,6 +155,8 @@ const authSlice = createSlice({
       state.profile = null;
       state.status = "idle";
       state.error = null;
+      state.profileStatus = "idle";
+      state.profileError = null;
       state.bootstrapped = true;
       clearAuthSession();
     },
@@ -221,20 +227,20 @@ const authSlice = createSlice({
         state.bootstrapped = true;
       })
       .addCase(updateProfileThunk.pending, (state) => {
-        state.status = "loading";
-        state.error = null;
+        state.profileStatus = "loading";
+        state.profileError = null;
       })
       .addCase(updateProfileThunk.fulfilled, (state, action) => {
         state.profile = action.payload;
         if (state.user) {
           state.user.username = action.payload.displayName;
         }
-        state.status = "authenticated";
-        state.error = null;
+        state.profileStatus = "idle";
+        state.profileError = null;
       })
       .addCase(updateProfileThunk.rejected, (state, action) => {
-        state.status = "authenticated";
-        state.error = action.payload;
+        state.profileStatus = "idle";
+        state.profileError = action.payload;
       });
   },
 });

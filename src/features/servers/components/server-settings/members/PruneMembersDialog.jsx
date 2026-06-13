@@ -29,7 +29,7 @@ export const PruneMembersDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[440px] bg-[#313338] text-gray-200 border-none p-0 overflow-visible gap-0 rounded-[8px] shadow-2xl">
+      <DialogContent className="sm:max-w-[440px] bg-chat-bg text-primary-text border-none p-0 overflow-visible gap-0 rounded-[8px] shadow-2xl">
         <DialogHeader className="p-4 pb-0 items-start text-left">
           <DialogTitle className="text-xl font-bold text-white pr-6">
             Prune Members—{serverName}
@@ -39,7 +39,7 @@ export const PruneMembersDialog = ({
         <div className="p-4 pt-6 space-y-6">
           {/* Last Seen Radio Buttons */}
           <div className="space-y-3">
-            <h3 className="text-sm font-bold text-gray-200 uppercase tracking-wide">Last Seen</h3>
+            <h3 className="text-sm font-bold text-primary-text uppercase tracking-wide">Last Seen</h3>
             <div className="space-y-3">
               {[
                 { id: "7", label: "more than 7 days ago" },
@@ -57,7 +57,7 @@ export const PruneMembersDialog = ({
                         : 'border border-gray-500 group-hover:border-gray-400 bg-transparent'
                     }`}
                   />
-                  <span className="text-[15px] text-gray-200 leading-none">{opt.label}</span>
+                  <span className="text-[15px] text-primary-text leading-none">{opt.label}</span>
                 </label>
               ))}
             </div>
@@ -65,24 +65,24 @@ export const PruneMembersDialog = ({
 
           {/* Roles dropdown native select */}
           <div className="space-y-2">
-            <h3 className="text-sm font-bold text-gray-200 uppercase tracking-wide">Also include members with these roles</h3>
+            <h3 className="text-sm font-bold text-primary-text uppercase tracking-wide">Also include members with these roles</h3>
             <div className="relative">
               <select
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
-                className="w-full bg-[#1e1f22] border border-transparent hover:border-black/50 text-gray-400 p-2.5 text-[15px] rounded appearance-none cursor-pointer focus:outline-none focus:border-black/50"
+                className="w-full bg-server-sidebar-bg border border-transparent hover:border-black/50 text-muted-text p-2.5 text-[15px] rounded appearance-none cursor-pointer focus:outline-none focus:border-black/50"
               >
                 <option value="">Select...</option>
                 {roles.map(r => (
-                  <option key={r.id} value={r.id} className="text-gray-200 bg-[#2b2d31]">{r.name}</option>
+                  <option key={r.id} value={r.id} className="text-primary-text bg-nav-sidebar-bg">{r.name}</option>
                 ))}
               </select>
-              <ChevronDown className="w-5 h-5 text-gray-400 absolute right-3 top-[10px] pointer-events-none" />
+              <ChevronDown className="w-5 h-5 text-muted-text absolute right-3 top-[10px] pointer-events-none" />
             </div>
           </div>
 
           {/* Info Text */}
-          <p className="text-sm text-gray-300 leading-relaxed bg-[#2b2d31]">
+          <p className="text-sm text-primary-text/80 leading-relaxed bg-nav-sidebar-bg">
             Pruning will kick <span className="font-bold text-white">{kickCount} members</span> who have not been seen on Discord in <span className="font-bold text-white">{days} days</span> and are {role ? <span>assigned to <span className="font-bold text-white">{formattedRoleName}</span> or no roles</span> : 'not assigned to any roles'}. They can rejoin the server using a new invite.
           </p>
         </div>
@@ -99,7 +99,7 @@ export const PruneMembersDialog = ({
           <Button 
             variant="primary" 
             onClick={() => onConfirm(days, role)} 
-            className="flex-1 text-white bg-[#5865F2] hover:bg-[#4752c4] h-[44px] rounded-[4px] font-medium transition-colors"
+            className="flex-1 text-white bg-[#5865F2] hover:bg-hover-bg h-[44px] rounded-[4px] font-medium transition-colors"
           >
             Prune
           </Button>

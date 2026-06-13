@@ -4,15 +4,15 @@ export const UnsavedChangesBar = ({ onReset, onSave, isSaving }) => {
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-center pointer-events-none animate-slide-up">
       <div className="mb-6 mx-4 w-full max-w-[740px] pointer-events-auto">
-        <div className="flex items-center justify-between rounded-md bg-[#111214] px-4 py-3 shadow-lg border border-[#1e1f22]">
-          <p className="text-sm text-gray-200 font-medium">
+        <div className="flex items-center justify-between rounded-md bg-user-panel-bg px-4 py-3 shadow-lg border border-server-sidebar-bg">
+          <p className="text-sm text-primary-text font-medium">
             Careful — you have unsaved changes!
           </p>
           <div className="flex items-center gap-3">
             <button
               onClick={onReset}
               disabled={isSaving}
-              className={`text-sm text-gray-300 hover:text-white font-medium transition-colors px-2 ${isSaving ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`text-sm text-muted-text hover:text-primary-text font-medium transition-colors px-2 ${isSaving ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               Reset
             </button>

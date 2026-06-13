@@ -5,7 +5,7 @@ import { UserBanner } from "@/features/users/components/UserBanner";
 import {
   getProfileBannerStyle,
   getUserDisplayName,
-} from "@/features/users/composables/user-profile-display";
+} from "@/features/users/hooks/userProfileDisplay";
 
 export function UserProfilePopover({ user, profile, onClose }) {
   const displayName = getUserDisplayName(user, profile);

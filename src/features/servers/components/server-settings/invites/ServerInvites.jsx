@@ -1,12 +1,12 @@
-import { useInvites } from "@/features/servers/composables/invites";
+import { useInvites } from "@/features/servers/hooks/useInvites";
 import { InvitesTable } from "./InvitesTable";
 import { PauseInvitesDialog } from "./PauseInvitesDialog";
 import { CreateInviteDialog } from "./CreateInviteDialog";
 import { EditInviteDialog } from "./EditInviteDialog";
 import { useState, useRef } from "react";
 
-export const ServerInvites = () => {
-  const inviteLogic = useInvites();
+export const ServerInvites = ({ serverName }) => {
+  const inviteLogic = useInvites(serverName);
   const [editInviteOpen, setEditInviteOpen] = useState(false);
   const skipGenerateRef = useRef(false);
 
@@ -16,14 +16,14 @@ export const ServerInvites = () => {
         <h2 className="text-xl font-bold text-white mb-10">Invites</h2>
         
         <div className="flex items-center justify-between">
-          <h3 className="text-[12px] font-bold text-gray-400 uppercase tracking-wide">
+          <h3 className="text-[12px] font-bold text-muted-text uppercase tracking-wide">
             {inviteLogic.invites.length === 0 ? "NO ACTIVE INVITE LINKS" : "ACTIVE INVITE LINKS"}
           </h3>
           <div className="flex items-center gap-3">
             {inviteLogic.isInvitesPaused ? (
               <button 
                 onClick={() => inviteLogic.setPauseDialogOpen(true)}
-                className="px-4 py-2.5 text-sm font-medium text-white bg-[#5865F2] hover:bg-[#4752c4] rounded-[4px] transition-colors"
+                className="px-4 py-2.5 text-sm font-medium text-white bg-[#5865F2] hover:bg-hover-bg rounded-[4px] transition-colors"
               >
                 Enable Invites
               </button>
@@ -37,7 +37,7 @@ export const ServerInvites = () => {
             )}
             <button 
               onClick={() => inviteLogic.setCreateDialogOpen(true)}
-              className="px-4 py-2.5 text-sm font-medium text-white bg-[#5865F2] hover:bg-[#4752c4] rounded-[4px] transition-colors"
+              className="px-4 py-2.5 text-sm font-medium text-white bg-[#5865F2] hover:bg-hover-bg rounded-[4px] transition-colors"
             >
               Create invite link
             </button>

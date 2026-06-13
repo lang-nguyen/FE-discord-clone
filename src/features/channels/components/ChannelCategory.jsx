@@ -56,7 +56,7 @@ const ChannelCategory = ({
                 tabIndex={0}
                 aria-expanded={isExpanded}
                 aria-controls={contentId}
-                className="flex items-center justify-between px-4 py-1 mb-[2px] cursor-pointer text-[#949BA4] hover:text-[#DBDEE1] transition-colors group focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#DBDEE1] rounded-sm"
+                className="flex items-center justify-between px-4 py-1 mb-[2px] cursor-pointer text-muted-text hover:text-primary-text transition-colors group focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary-text rounded-sm"
                 onClick={handleToggle}
                 onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
@@ -68,7 +68,7 @@ const ChannelCategory = ({
                 <div className="flex items-center flex-1 min-w-0">
                     <ChevronDown 
                         className={cn(
-                            "w-3 h-3 mr-0.5 transition-transform duration-200 stroke-[3]",
+                             "w-3 h-3 mr-0.5 transition-transform duration-200 stroke-[3]",
                             !isExpanded ? "-rotate-90" : ""
                         )} 
                     />
@@ -83,7 +83,7 @@ const ChannelCategory = ({
                             e.stopPropagation();
                             onAdd();
                         }}
-                        className="ml-1 p-0.5 rounded-sm hover:text-[#F2F3F5] transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#DBDEE1]"
+                        className="ml-1 p-0.5 rounded-sm hover:text-primary-text transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary-text"
                         aria-label={`Add ${title}`}
                     >
                         <Plus className="w-4 h-4" />

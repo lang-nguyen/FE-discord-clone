@@ -7,6 +7,7 @@ export function ServerSettingLayout({
   activeTab,
   onTabChange,
   onClose,
+  serverId,
   serverName,
   profileData,
   onUpdateField,
@@ -17,12 +18,12 @@ export function ServerSettingLayout({
   deleteConfirm,
 }) {
   return (
-    <div className="h-screen flex bg-[#2b2d31] relative">
+    <div className="h-screen flex bg-chat-bg text-primary-text relative">
       {/* LEFT SPACE (center layout) */}
       <div className="w-[20%]" />
 
       {/* SIDEBAR */}
-      <div className="w-[35%] max-w-[260px] min-w-[200px] bg-[#2b2d31] overflow-y-auto">
+      <div className="w-[35%] max-w-[260px] min-w-[200px] bg-nav-sidebar-bg overflow-y-auto">
         <ServerSettingsSidebar
           activeTab={activeTab}
           onTabChange={onTabChange}
@@ -38,9 +39,9 @@ export function ServerSettingLayout({
           onClick={onClose}
           className="fixed top-[60px] right-6 group flex flex-col items-center gap-1 z-20"
         >
-          <div className="w-9 h-9 rounded-full border-2 border-gray-500 flex items-center justify-center group-hover:border-white transition-colors">
+          <div className="w-9 h-9 rounded-full border-2 border-muted-text flex items-center justify-center group-hover:border-primary-text transition-colors">
             <svg
-              className="w-5 h-5 text-gray-500 group-hover:text-white transition-colors"
+              className="w-5 h-5 text-muted-text group-hover:text-primary-text transition-colors"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -53,7 +54,7 @@ export function ServerSettingLayout({
               />
             </svg>
           </div>
-          <span className="text-[12px] font-semibold text-gray-500 group-hover:text-white tracking-wide">
+          <span className="text-[12px] font-semibold text-muted-text group-hover:text-primary-text tracking-wide">
             ESC
           </span>
         </button>
@@ -66,6 +67,7 @@ export function ServerSettingLayout({
           >
             <ContentArea
               activeTab={activeTab}
+              serverId={serverId}
               profileData={profileData}
               onUpdateField={onUpdateField}
             />

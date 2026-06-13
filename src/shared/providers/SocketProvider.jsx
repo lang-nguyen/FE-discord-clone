@@ -1,65 +1,69 @@
-import { createContext, useEffect, useState } from 'react';
-import * as signalR from '@microsoft/signalr';
+import { createContext, useEffect, useMemo, useState } from "react";
+import * as signalR from "@microsoft/signalr";
+import { useSelector } from "react-redux";
+import { getStoredAccessToken } from "@/features/auth/utils/authStorage";
 
 export const SocketContext = createContext({
-    socket: null,
-    isConnected: false,
+  connection: null,
+  isConnected: false,
 });
 
 export const SocketProvider = ({ children }) => {
-    const [socket, setSocket] = useState(null);
-    const [isConnected, setIsConnected] = useState(false);
+  const accessToken = useSelector((state) => state.auth.accessToken);
+  const [connection, setConnection] = useState(null);
+  const [isConnected, setIsConnected] = useState(false);
 
-    useEffect(() => {
-        const wsUrl = import.meta.env.VITE_WS_URL;
-        if (!wsUrl) {
-            console.warn('VITE_WS_URL is not configured. SignalR connection is skipped.');
-            return;
-        }
+  useEffect(() => {
+    const wsUrl = import.meta.env.VITE_WS_URL;
+    if (!wsUrl || !accessToken) return undefined;
 
-        const connection = new signalR.HubConnectionBuilder()
-            .withUrl(wsUrl, {
-                // Tắt comment dòng dưới nếu gặp lỗi CORS policy (nếu BE không có auth cookie)
-                skipNegotiation: true,
-                transport: signalR.HttpTransportType.WebSockets
-            })
-            .withAutomaticReconnect() // Tự động kết nối lại khi rớt mạng
-            .build();
+    const nextConnection = new signalR.HubConnectionBuilder()
+      .withUrl(wsUrl, {
+        accessTokenFactory: () => getStoredAccessToken() || "",
+      })
+      .withAutomaticReconnect()
+      .configureLogging(signalR.LogLevel.None)
+      .build();
 
+    setConnection(nextConnection);
+    nextConnection.onclose(() => {
+      setIsConnected(false);
+    });
+    nextConnection.onreconnecting(() => setIsConnected(false));
+    nextConnection.onreconnected(() => {
+      setIsConnected(true);
+    });
 
-        setSocket(connection);
+    let disposed = false;
+    nextConnection
+      .start()
+      .then(() => {
+        if (!disposed) setIsConnected(true);
+      })
+      .catch(() => {
+        if (!disposed) setIsConnected(false);
+      });
 
-        // Khởi động kết nối
-        connection.start()
-            .then(() => {
-                console.log('SignalR connected:', connection.connectionId);
-                setIsConnected(true);
-            })
-            .catch(err => {
-                console.error('SignalR connection failed: ', err);
-                setIsConnected(false);
-            });
+    return () => {
+      disposed = true;
+      setIsConnected(false);
+      setConnection(null);
+      nextConnection.stop();
+    };
+  }, [accessToken]);
 
-        // Lắng nghe sự kiện ngắt kết nối
-        connection.onclose(() => {
-            console.log('SignalR disconnected');
-            setIsConnected(false);
-        });
+  const value = useMemo(
+    () => ({
+      connection,
+      isConnected,
+      invoke: (method, ...args) => connection?.invoke(method, ...args),
+      subscribe: (event, handler) => {
+        connection?.on(event, handler);
+        return () => connection?.off(event, handler);
+      },
+    }),
+    [connection, isConnected]
+  );
 
-        // Lắng nghe sự kiện kết nối lại thành công sau khi rớt mạng
-        connection.onreconnected(connectionId => {
-            console.log('SignalR reconnected:', connectionId);
-            setIsConnected(true);
-        });
-
-        return () => {
-            connection.stop();
-        };
-    }, []);
-
-    return (
-        <SocketContext.Provider value={{ socket, isConnected }}>
-            {children}
-        </SocketContext.Provider>
-    );
+  return <SocketContext.Provider value={value}>{children}</SocketContext.Provider>;
 };

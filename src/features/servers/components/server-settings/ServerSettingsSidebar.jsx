@@ -37,14 +37,14 @@ function SidebarItem({ item, isActive, onClick }) {
           className={cn(
             "w-full text-left px-2.5 py-1.5 rounded text-sm transition-colors flex items-center justify-between group",
             isActive
-              ? "bg-[#43444b] text-white"
-              : "text-gray-400 hover:text-gray-200 hover:bg-[#35373c]"
+              ? "bg-hover-bg text-primary-text"
+              : "text-muted-text hover:text-primary-text hover:bg-hover-bg"
           )}
         >
           <span className="truncate">{item.name}</span>
           {item.hasExternalLink && (
             <svg
-              className="w-3.5 h-3.5 text-gray-500 group-hover:text-gray-400 transition-colors shrink-0"
+              className="w-3.5 h-3.5 text-muted-text group-hover:text-primary-text transition-colors shrink-0"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -81,12 +81,12 @@ export function ServerSettingsSidebar({
               <div key={sectionIdx} className={cn(sectionIdx > 0 && "mt-2")}>
                 {/* Section label */}
                 {section.serverName ? (
-                  <div className="px-2.5 py-1.5 text-xs font-bold uppercase tracking-wide text-gray-500 truncate">
+                  <div className="px-2.5 py-1.5 text-xs font-bold uppercase tracking-wide text-muted-text truncate">
                     {serverName}
                   </div>
                 ) : (
                   section.label && (
-                    <div className="px-2.5 py-1.5 text-xs font-bold uppercase tracking-wide text-gray-500">
+                    <div className="px-2.5 py-1.5 text-xs font-bold uppercase tracking-wide text-muted-text">
                       {section.label}
                     </div>
                   )
@@ -106,13 +106,13 @@ export function ServerSettingsSidebar({
 
                 {/* Separator after section */}
                 {sectionIdx < SIDEBAR_SECTIONS.length - 1 && (
-                  <div className="mx-2.5 mt-2 border-b border-[#3b3d44]" />
+                  <div className="mx-2.5 mt-2 border-b border-black/10" />
                 )}
               </div>
             ))}
 
             {/* Separator before bottom items */}
-            <div className="mx-2.5 mt-2 border-b border-[#3b3d44]" />
+            <div className="mx-2.5 mt-2 border-b border-black/10" />
 
             {/* Bottom items */}
             <div className="flex flex-col gap-0.5 mt-2">
@@ -127,11 +127,11 @@ export function ServerSettingsSidebar({
             </div>
 
             {/* Delete Server */}
-            <div className="mx-2.5 mt-2 border-b border-[#3b3d44]" />
+            <div className="mx-2.5 mt-2 border-b border-black/10" />
             <div className="mt-2">
               <button
                 onClick={onDeleteServer}
-                className="w-full text-left px-2.5 py-1.5 rounded text-sm transition-colors flex items-center justify-between group text-red-400 hover:text-red-300 hover:bg-[#35373c]"
+                className="w-full text-left px-2.5 py-1.5 rounded text-sm transition-colors flex items-center justify-between group text-red-400 hover:text-red-300 hover:bg-hover-bg"
               >
                 <span>Delete Server</span>
                 <svg

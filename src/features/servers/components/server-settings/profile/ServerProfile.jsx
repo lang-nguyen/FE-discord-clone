@@ -1,7 +1,7 @@
 import { ServerInformation } from "./ServerInformation";
 import { ServerPreviewCard } from "./ServerPreviewCard";
 import { ImageEditorDialog } from "@/shared/components/ui/ImageEditorDialog";
-import { useServerIcon } from "@/features/servers/composables/server-icon";
+import { useServerIcon } from "@/features/servers/hooks/useServerIcon";
 
 export const ServerProfile = ({ data, onUpdateField }) => {
   const icon = useServerIcon({

@@ -13,7 +13,7 @@ export const RevokeBanDialog = ({ open, onOpenChange, targetBan, onConfirm }) =>
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-[#313338] border-none text-gray-200 max-w-[440px] p-0 overflow-hidden shadow-xl rounded-lg">
+      <DialogContent className="bg-chat-bg border-none text-primary-text max-w-[440px] p-0 overflow-hidden shadow-xl rounded-lg">
         <div className="p-4">
           <DialogHeader className="mb-4">
             <DialogTitle className="text-xl font-bold text-white mb-2">
@@ -25,7 +25,7 @@ export const RevokeBanDialog = ({ open, onOpenChange, targetBan, onConfirm }) =>
           </DialogHeader>
         </div>
 
-        <DialogFooter className="bg-[#2b2d31] p-4 flex gap-2 justify-end mt-0">
+        <DialogFooter className="bg-nav-sidebar-bg p-4 flex gap-2 justify-end mt-0">
           <button
             onClick={() => onOpenChange(false)}
             className="px-4 py-2 text-sm font-medium text-white hover:underline rounded"

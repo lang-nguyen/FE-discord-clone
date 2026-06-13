@@ -12,7 +12,7 @@ export const BlockMemberDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[440px] bg-[#313338] text-gray-200 border-none p-0 overflow-hidden gap-0 rounded-[8px] shadow-2xl">
+      <DialogContent className="sm:max-w-[440px] bg-chat-bg text-primary-text border-none p-0 overflow-hidden gap-0 rounded-[8px] shadow-2xl">
         <div className="p-6 pt-8 pb-4 flex flex-col items-center text-center">
           {/* Avatar Icon */}
           <div className="relative mb-4">
@@ -23,8 +23,8 @@ export const BlockMemberDialog = ({
               </svg>
             </div>
             {/* Block Overlay Icon */}
-            <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-[#313338] rounded-full flex items-center justify-center">
-              <Ban className="w-[18px] h-[18px] text-gray-400" />
+            <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-chat-bg rounded-full flex items-center justify-center">
+              <Ban className="w-[18px] h-[18px] text-muted-text" />
             </div>
           </div>
 
@@ -38,28 +38,28 @@ export const BlockMemberDialog = ({
           <div className="w-full flex flex-col gap-5 text-left mb-6">
             {/* Item 1 */}
             <div className="flex items-start gap-4">
-              <CheckCircle2 className="w-5 h-5 text-gray-300 shrink-0 mt-0.5" />
+              <CheckCircle2 className="w-5 h-5 text-primary-text/80 shrink-0 mt-0.5" />
               <div>
                 <h4 className="text-[15px] font-bold text-white mb-0.5">Stop direct messages</h4>
-                <p className="text-[13px] text-gray-400 leading-snug">You can unhide past messages if you want</p>
+                <p className="text-[13px] text-muted-text leading-snug">You can unhide past messages if you want</p>
               </div>
             </div>
 
             {/* Item 2 */}
             <div className="flex items-start gap-4">
-              <CheckCircle2 className="w-5 h-5 text-gray-300 shrink-0 mt-0.5" />
+              <CheckCircle2 className="w-5 h-5 text-primary-text/80 shrink-0 mt-0.5" />
               <div>
                 <h4 className="text-[15px] font-bold text-white mb-0.5">Limit access to your profile and activity</h4>
-                <p className="text-[13px] text-gray-400 leading-snug">They won't see your mutual friends, bio, or status</p>
+                <p className="text-[13px] text-muted-text leading-snug">They won't see your mutual friends, bio, or status</p>
               </div>
             </div>
 
             {/* Item 3 */}
             <div className="flex items-start gap-4">
-              <AlertTriangle className="w-5 h-5 text-gray-400 shrink-0 mt-0.5" />
+              <AlertTriangle className="w-5 h-5 text-muted-text shrink-0 mt-0.5" />
               <div>
                 <h4 className="text-[15px] font-bold text-white mb-0.5">They can interact with you in GDMs and servers</h4>
-                <p className="text-[13px] text-gray-400 leading-snug">If you join a voice channel they're active in, we'll let you know</p>
+                <p className="text-[13px] text-muted-text leading-snug">If you join a voice channel they're active in, we'll let you know</p>
               </div>
             </div>
           </div>
@@ -69,7 +69,7 @@ export const BlockMemberDialog = ({
           </a>
         </div>
 
-        <div className="p-4 flex gap-3 mt-auto bg-[#2b2d31]">
+        <div className="p-4 flex gap-3 mt-auto bg-nav-sidebar-bg">
           <Button 
             variant="ghost" 
             onClick={() => onOpenChange(false)} 

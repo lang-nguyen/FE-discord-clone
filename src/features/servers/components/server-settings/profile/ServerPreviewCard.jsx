@@ -18,7 +18,7 @@ export const ServerPreviewCard = ({ data, onOpenIconPicker }) => {
   return (
     <div className="hidden lg:block">
       <div className="fixed top-5">
-        <div className="w-[300px] rounded-lg overflow-hidden bg-[#232428] border border-[#3b3d44]/50 shadow-xl">
+        <div className="w-[300px] rounded-lg overflow-hidden bg-user-panel-bg border border-black/20 shadow-xl">
 
           {/* Banner */}
           <div
@@ -32,7 +32,7 @@ export const ServerPreviewCard = ({ data, onOpenIconPicker }) => {
               className="absolute -top-6 cursor-pointer group"
               onClick={onOpenIconPicker}
             >
-              <Avatar className="w-[52px] h-[52px] rounded-2xl border-[4px] border-[#232428] transition-opacity">
+              <Avatar className="w-[52px] h-[52px] rounded-2xl border-[4px] border-user-panel-bg transition-opacity">
                 {avatarUrl ? (
                   <AvatarImage src={avatarUrl} alt={serverName} />
                 ) : (
@@ -55,29 +55,29 @@ export const ServerPreviewCard = ({ data, onOpenIconPicker }) => {
 
           {/* Info */}
           <div className="px-4 pt-9 pb-4">
-            <h3 className="text-base font-semibold text-white truncate">
+            <h3 className="text-base font-semibold text-primary-text truncate">
               {serverName || "Server Name"}
             </h3>
 
-            <div className="flex items-center gap-3 mt-1.5 text-xs text-gray-400">
+            <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-text">
               <span className="flex items-center gap-1">
                 <span className="w-2 h-2 rounded-full bg-green-500" />
                 {onlineCount} Online
               </span>
               <span className="flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-gray-500" />
+                <span className="w-2 h-2 rounded-full bg-muted-text" />
                 {membersCount} Members
               </span>
             </div>
 
             {establishedDate && (
-              <p className="text-xs text-gray-500 mt-1.5">
+              <p className="text-xs text-muted-text/70 mt-1.5">
                 Est. {establishedDate}
               </p>
             )}
 
             {description && (
-              <p className="text-sm text-gray-400 mt-3 whitespace-pre-wrap break-words">
+              <p className="text-sm text-muted-text mt-3 whitespace-pre-wrap break-words">
                 {description}
               </p>
             )}

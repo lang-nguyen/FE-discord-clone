@@ -10,7 +10,7 @@ export const EditInviteDialog = ({ open, onOpenChange, onGenerate }) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[440px] bg-[#313338] text-gray-200 border-none p-0 overflow-hidden gap-0 rounded-[8px] shadow-2xl">
+      <DialogContent className="sm:max-w-[440px] bg-chat-bg text-primary-text border-none p-0 overflow-hidden gap-0 rounded-[8px] shadow-2xl">
         <DialogHeader className="p-4 pb-0 items-start text-left flex flex-row justify-between w-full">
           <DialogTitle className="text-xl font-bold text-white mb-2">
             Server invite link settings
@@ -19,47 +19,47 @@ export const EditInviteDialog = ({ open, onOpenChange, onGenerate }) => {
 
         <div className="p-4 pt-2 space-y-5">
           <div className="space-y-2">
-            <label className="text-xs font-bold text-gray-300 uppercase tracking-wide">Expire After</label>
+            <label className="text-xs font-bold text-primary-text/80 uppercase tracking-wide">Expire After</label>
             <div className="relative">
               <select
-                className="w-full bg-[#1e1f22] border border-[#1e1f22] hover:border-black/50 text-gray-200 p-2.5 text-[15px] rounded-[4px] appearance-none cursor-pointer focus:outline-none focus:border-black/50 font-medium"
+                className="w-full bg-server-sidebar-bg border border-[#1e1f22] hover:border-black/50 text-primary-text p-2.5 text-[15px] rounded-[4px] appearance-none cursor-pointer focus:outline-none focus:border-black/50 font-medium"
                 defaultValue="7 days"
               >
-                <option value="30 minutes" className="bg-[#2b2d31]">30 minutes</option>
-                <option value="1 hour" className="bg-[#2b2d31]">1 hour</option>
-                <option value="6 hours" className="bg-[#2b2d31]">6 hours</option>
-                <option value="12 hours" className="bg-[#2b2d31]">12 hours</option>
-                <option value="1 day" className="bg-[#2b2d31]">1 day</option>
-                <option value="7 days" className="bg-[#2b2d31]">7 days</option>
-                <option value="Never" className="bg-[#2b2d31]">Never</option>
+                <option value="30 minutes" className="bg-nav-sidebar-bg">30 minutes</option>
+                <option value="1 hour" className="bg-nav-sidebar-bg">1 hour</option>
+                <option value="6 hours" className="bg-nav-sidebar-bg">6 hours</option>
+                <option value="12 hours" className="bg-nav-sidebar-bg">12 hours</option>
+                <option value="1 day" className="bg-nav-sidebar-bg">1 day</option>
+                <option value="7 days" className="bg-nav-sidebar-bg">7 days</option>
+                <option value="Never" className="bg-nav-sidebar-bg">Never</option>
               </select>
-              <ChevronDown className="w-5 h-5 text-gray-400 absolute right-3 top-[11px] pointer-events-none" />
+              <ChevronDown className="w-5 h-5 text-muted-text absolute right-3 top-[11px] pointer-events-none" />
             </div>
           </div>
 
           <div className="space-y-2">
-            <label className="text-xs font-bold text-gray-300 uppercase tracking-wide">Max Number of Uses</label>
+            <label className="text-xs font-bold text-primary-text/80 uppercase tracking-wide">Max Number of Uses</label>
             <div className="relative">
               <select
-                className="w-full bg-[#1e1f22] border border-[#1e1f22] hover:border-black/50 text-gray-200 p-2.5 text-[15px] rounded-[4px] appearance-none cursor-pointer focus:outline-none focus:border-black/50 font-medium"
+                className="w-full bg-server-sidebar-bg border border-[#1e1f22] hover:border-black/50 text-primary-text p-2.5 text-[15px] rounded-[4px] appearance-none cursor-pointer focus:outline-none focus:border-black/50 font-medium"
                 defaultValue="No limit"
               >
-                <option value="No limit" className="bg-[#2b2d31]">No limit</option>
-                <option value="1 use" className="bg-[#2b2d31]">1 use</option>
-                <option value="5 uses" className="bg-[#2b2d31]">5 uses</option>
-                <option value="10 uses" className="bg-[#2b2d31]">10 uses</option>
-                <option value="25 uses" className="bg-[#2b2d31]">25 uses</option>
-                <option value="50 uses" className="bg-[#2b2d31]">50 uses</option>
-                <option value="100 uses" className="bg-[#2b2d31]">100 uses</option>
+                <option value="No limit" className="bg-nav-sidebar-bg">No limit</option>
+                <option value="1 use" className="bg-nav-sidebar-bg">1 use</option>
+                <option value="5 uses" className="bg-nav-sidebar-bg">5 uses</option>
+                <option value="10 uses" className="bg-nav-sidebar-bg">10 uses</option>
+                <option value="25 uses" className="bg-nav-sidebar-bg">25 uses</option>
+                <option value="50 uses" className="bg-nav-sidebar-bg">50 uses</option>
+                <option value="100 uses" className="bg-nav-sidebar-bg">100 uses</option>
               </select>
-              <ChevronDown className="w-5 h-5 text-gray-400 absolute right-3 top-[11px] pointer-events-none" />
+              <ChevronDown className="w-5 h-5 text-muted-text absolute right-3 top-[11px] pointer-events-none" />
             </div>
           </div>
 
           <div className="flex items-start justify-between mt-2 pt-2">
             <div className="pr-4">
               <h4 className="text-[15px] font-bold text-white mb-1">Grant temporary membership</h4>
-              <p className="text-[13px] text-gray-400 leading-snug">Temporary members are automatically kicked when they disconnect unless a role has been assigned</p>
+              <p className="text-[13px] text-muted-text leading-snug">Temporary members are automatically kicked when they disconnect unless a role has been assigned</p>
             </div>
             <button
               role="switch"
@@ -78,7 +78,7 @@ export const EditInviteDialog = ({ open, onOpenChange, onGenerate }) => {
           </div>
         </div>
 
-        <div className="p-4 flex gap-3 bg-[#2b2d31] mt-2">
+        <div className="p-4 flex gap-3 bg-nav-sidebar-bg mt-2">
           <Button 
             variant="ghost" 
             onClick={() => onOpenChange(false)} 
@@ -92,7 +92,7 @@ export const EditInviteDialog = ({ open, onOpenChange, onGenerate }) => {
               if (onGenerate) onGenerate();
               onOpenChange(false);
             }} 
-            className="flex-[1.5] text-white bg-[#5865F2] hover:bg-[#4752c4] h-[44px] rounded-[4px] font-medium transition-colors"
+            className="flex-[1.5] text-white bg-[#5865F2] hover:bg-hover-bg h-[44px] rounded-[4px] font-medium transition-colors"
           >
             Generate a New Link
           </Button>

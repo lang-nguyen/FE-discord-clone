@@ -18,7 +18,7 @@ export const BANNER_COLORS = [
 export const ServerBannerSelector = ({ selectedBanner, onChange }) => {
   return (
     <div className="mb-6">
-      <h3 className="text-xs font-bold uppercase tracking-wide text-gray-300 mb-3">
+      <h3 className="text-xs font-bold uppercase tracking-wide text-muted-text mb-3">
         Banner
       </h3>
       <div className="flex flex-col gap-2">
@@ -31,8 +31,8 @@ export const ServerBannerSelector = ({ selectedBanner, onChange }) => {
                   key={idx}
                   className={`w-[85px] h-[52px] rounded-lg transition-all ${
                     selectedBanner === idx
-                      ? "ring-2 ring-white ring-offset-2 ring-offset-[#313338] scale-105"
-                      : "hover:scale-105 hover:ring-1 hover:ring-gray-500"
+                      ? "ring-2 ring-primary-text ring-offset-2 ring-offset-chat-bg scale-105"
+                      : "hover:scale-105 hover:ring-1 hover:ring-muted-text"
                   }`}
                   style={{ background: gradient }}
                   onClick={() => onChange(idx)}

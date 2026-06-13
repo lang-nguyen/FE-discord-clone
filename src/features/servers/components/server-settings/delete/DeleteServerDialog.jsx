@@ -19,19 +19,19 @@ export const DeleteServerDialog = ({
 }) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-[#313338] border-none max-w-[440px] p-0 gap-0 rounded-xl">
+      <DialogContent className="bg-chat-bg text-primary-text border-none max-w-[440px] p-0 gap-0 rounded-xl">
         {/* Header */}
         <DialogHeader className="px-6 pt-5 pb-0">
-          <DialogTitle className="text-white text-xl font-semibold select-none">
+          <DialogTitle className="text-primary-text text-xl font-semibold select-none">
             Delete '{serverName}'
           </DialogTitle>
         </DialogHeader>
 
         {/* Body */}
         <div className="px-6 py-4">
-          <p className="text-sm text-gray-400 leading-relaxed select-none">
+          <p className="text-sm text-muted-text leading-relaxed select-none">
             Are you sure you want to delete{" "}
-            <span className="font-semibold text-white">{serverName}</span>?
+            <span className="font-semibold text-primary-text">{serverName}</span>?
             This action cannot be undone.
           </p>
 
@@ -40,17 +40,17 @@ export const DeleteServerDialog = ({
               label="Enter server name"
               value={confirmName}
               onChange={(e) => onConfirmNameChange(e.target.value)}
-              className="bg-[#1e1f22]"
+              className="bg-input-bg"
             />
           </div>
         </div>
 
         {/* Footer */}
-        <DialogFooter className="px-6 py-4 border-t border-[#3b3d44]/50 !flex !flex-row !justify-end gap-3">
+        <DialogFooter className="px-6 py-4 border-t border-black/10 !flex !flex-row !justify-end gap-3">
           <Button
             variant="ghost"
             size="sm"
-            className="text-gray-300 hover:text-white hover:bg-[#404249] rounded-md px-6"
+            className="text-muted-text hover:text-primary-text hover:bg-hover-bg rounded-md px-6"
             onClick={() => onOpenChange(false)}
           >
             Cancel

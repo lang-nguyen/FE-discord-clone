@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/lib/utils";
 import {
   Tooltip,
   TooltipContent,
@@ -27,7 +27,7 @@ const ServerSidebarItem = ({
   const handleClick = () => {
     setIsSeen(true);
     if (onServerClick) {
-      onServerClick(name); // Báo cho App.jsx: "Đổi tên Display thành [name] cho tôi!"
+      onServerClick(id); // Báo cho MainLayout.jsx đổi activeServerId
     }
   };
 
@@ -44,7 +44,7 @@ const ServerSidebarItem = ({
             {/* Thanh trắng bên trái */}
             <div
               className={cn(
-                "absolute left-0 bg-white rounded-r-full transition-all duration-200 w-[4px]",
+                "absolute left-0 bg-primary-text rounded-r-full transition-all duration-200 w-[4px]",
                 isActive ? "h-[40px]" : hasNotification ? "h-[8px]" : "h-0",
                 !isActive && "group-hover:h-[20px]"
               )}
@@ -54,7 +54,7 @@ const ServerSidebarItem = ({
             <div
               className={cn(
                 "relative flex mx-3 h-[48px] w-[48px] transition-all duration-200 overflow-visible",
-                "bg-[#313338] text-white",
+                "bg-chat-bg text-primary-text",
                 isActive ? "rounded-[16px]" : "rounded-[50%] group-hover:rounded-[16px]"
               )}
             >
@@ -77,7 +77,7 @@ const ServerSidebarItem = ({
 
               {/* 4. CHỈ HIỆN BADGE NẾU (có tin nhắn) VÀ (chưa bấm vào - !isSeen) */}
               {mentionsCount > 0 && !isSeen && (
-                <div className="absolute -bottom-1 -right-1 bg-red-500 text-white text-[11px] font-bold rounded-full min-w-[20px] h-5 px-1 flex items-center justify-center border-[3px] border-[#1e1f22]">
+                <div className="absolute -bottom-1 -right-1 bg-red-500 text-white text-[11px] font-bold rounded-full min-w-[20px] h-5 px-1 flex items-center justify-center border-[3px] border-server-sidebar-bg">
                   {mentionsCount}
                 </div>
               )}
@@ -87,7 +87,7 @@ const ServerSidebarItem = ({
         <TooltipContent
           side="right"
           align="center"
-          className="ml-2 font-bold bg-black text-white border-none shadow-xl"
+          className="ml-2 font-bold shadow-xl"
         >
           {name}
         </TooltipContent>

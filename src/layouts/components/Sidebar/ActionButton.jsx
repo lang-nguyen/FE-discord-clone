@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/lib/utils";
 import {
   Tooltip,
   TooltipContent,
@@ -22,13 +22,13 @@ const ActionButton = ({ type, name, onClick }) => {
           >
 
             {/* Pill Indicator (Optional for action buttons, but Discord sometimes uses a small one) */}
-            <div className="absolute left-0 bg-white rounded-r-full transition-all duration-200 w-[4px] h-0 group-hover:h-[20px]" />
+            <div className="absolute left-0 bg-primary-text rounded-r-full transition-all duration-200 w-[4px] h-0 group-hover:h-[20px]" />
 
             {/* Icon Container */}
             <div
               className={cn(
                 "relative flex mx-3 h-[48px] w-[48px] transition-all duration-200 overflow-hidden",
-                "bg-[#313338] text-[#23a559] group-hover:bg-[#23a559] group-hover:text-white",
+                "bg-chat-bg text-[#23a559] group-hover:bg-[#23a559] group-hover:text-white",
                 "rounded-[50%] group-hover:rounded-[16px]"
               )}
             >
@@ -41,7 +41,7 @@ const ActionButton = ({ type, name, onClick }) => {
         <TooltipContent
           side="right"
           align="center"
-          className="ml-2 font-bold bg-black text-white border-none shadow-xl"
+          className="ml-2 font-bold shadow-xl"
         >
           {name}
         </TooltipContent>

@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/lib/utils";
 import {
   Tooltip,
   TooltipContent,
@@ -6,16 +6,19 @@ import {
   TooltipTrigger,
 } from "@/shared/components/ui/Tooltip";
 
-const HomeButton = ({ isActive }) => {
+const HomeButton = ({ isActive, onClick }) => {
   return (
     <TooltipProvider>
       <Tooltip delayDuration={0}>
         <TooltipTrigger asChild>
-          <button className="group relative flex items-center mb-3 focus:outline-none">
+          <button
+            onClick={onClick}
+            className="group relative flex items-center mb-3 focus:outline-none"
+          >
             {/* Pill Indicator */}
             <div
               className={cn(
-                "absolute left-0 bg-white rounded-r-full transition-all duration-200 w-[4px]",
+                "absolute left-0 bg-primary-text rounded-r-full transition-all duration-200 w-[4px]",
                 isActive ? "h-[40px]" : "h-0",
                 !isActive && "group-hover:h-[20px]"
               )}
@@ -25,8 +28,10 @@ const HomeButton = ({ isActive }) => {
             <div
               className={cn(
                 "relative flex mx-3 h-[48px] w-[48px] transition-all duration-200 overflow-hidden",
-                "bg-[#313338] text-[#dbdee1] group-hover:bg-[#5865f2] group-hover:text-white",
-                isActive ? "rounded-[16px] bg-[#5865f2] text-white" : "rounded-[50%] group-hover:rounded-[16px]"
+                "bg-chat-bg text-muted-text group-hover:bg-[#5865f2] group-hover:text-white",
+                isActive
+                  ? "rounded-[16px] bg-[#5865f2] text-white"
+                  : "rounded-[50%] group-hover:rounded-[16px]"
               )}
             >
               <div className="flex items-center justify-center w-full h-full">
@@ -43,11 +48,7 @@ const HomeButton = ({ isActive }) => {
             </div>
           </button>
         </TooltipTrigger>
-        <TooltipContent
-          side="right"
-          align="center"
-          className="ml-2 font-bold bg-black text-white border-none shadow-xl"
-        >
+        <TooltipContent side="right" align="center" className="ml-2 font-bold shadow-xl">
           Direct Messages
         </TooltipContent>
       </Tooltip>

@@ -5,7 +5,7 @@ export const TransferIllustration = ({ currentUser, targetMember }) => {
     <div className="relative flex items-center justify-center mt-12 mb-8 mx-auto w-[132px]">
       {/* Arrow */}
       <svg
-        className="absolute left-0 right-0 top-[-30px] w-full h-[50px] text-[#80848e]"
+        className="absolute left-0 right-0 top-[-30px] w-full h-[50px] text-muted-text"
         fill="none"
         viewBox="0 0 132 50"
       >
@@ -31,7 +31,7 @@ export const TransferIllustration = ({ currentUser, targetMember }) => {
         fallbackClassName="text-3xl font-bold bg-[#5865f2]"
       />
 
-      <div className="relative z-10 -ml-6 rounded-full bg-[#313338] p-1.5 flex shrink-0">
+      <div className="relative z-10 -ml-6 rounded-full bg-chat-bg p-1.5 flex shrink-0">
         <MemberAvatar
           member={targetMember}
           className="w-[72px] h-[72px] rounded-full bg-[#5865f2]"

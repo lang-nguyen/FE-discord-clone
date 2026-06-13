@@ -4,6 +4,16 @@
 
 @layer base {
   :root {
+    --server-sidebar-bg: #1e1f22;
+    --nav-sidebar-bg: #2b2d31;
+    --chat-bg: #313338;
+    --user-panel-bg: #232428;
+    --input-bg: #383a40;
+    --primary-accent: #5865F2;
+    --hover-bg: #35373C;
+    --text-primary: #f2f3f5;
+    --text-muted: #949ba4;
+
     --background: 0 0% 100%;
     --foreground: 224 71.4% 4.1%;
     --card: 0 0% 100%;

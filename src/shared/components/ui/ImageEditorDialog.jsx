@@ -8,7 +8,7 @@ import {
 } from "./Dialog";
 import { Button } from "./Button";
 
-import { useImageEditor } from "../../composables/useImageEditor";
+import { useImageEditor } from "@/shared/hooks/useImageEditor";
 
 export const ImageEditorDialog = ({ open, onOpenChange, imageSrc, onApply }) => {
   const {
